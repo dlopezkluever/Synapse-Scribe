@@ -1,0 +1,14 @@
+[project]
+name = "brain-text-decoder"
+version = "0.1.0"
+description = "Brain to Text Decoder Simulator — Neural Speech & Handwriting BCI Decoding System"
+requires-python = ">=3.10"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"
+
+[tool.setuptools.packages.find]
+include = ["src*"]

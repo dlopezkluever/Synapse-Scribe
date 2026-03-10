@@ -1,0 +1,18 @@
+# Brain-Text Decoder — Configuration Overrides
+# Values here override the defaults in src/config.py.
+# Uncomment and modify as needed.
+
+# dataset: willett_handwriting
+# subjects: [1]
+# data_path: ./data
+# split_ratios: [0.8, 0.1, 0.1]
+
+# bandpass_low: 1.0
+# bandpass_high: 200.0
+# target_fs: 250.0
+# t_max: 2000
+
+# model_type: cnn_lstm
+# learning_rate: 0.0003
+# batch_size: 16
+# max_epochs: 200

@@ -1,0 +1,26 @@
+name: bci2
+channels:
+  - pytorch
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - pytorch>=2.1
+  - torchaudio
+  - numpy
+  - scipy
+  - mne>=1.6
+  - pandas>=2.0
+  - matplotlib
+  - seaborn
+  - plotly
+  - scikit-learn
+  - pyyaml
+  - pip
+  - pip:
+      - jiwer>=3.0
+      - streamlit>=1.30
+      - fastapi
+      - uvicorn
+      - pytest
+      - h5py
