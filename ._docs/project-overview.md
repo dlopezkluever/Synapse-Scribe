@@ -19,14 +19,17 @@ People with paralysis, ALS, or locked-in syndrome lose the ability to communicat
 ```
 neural signals
       ↓
+  recording diagnostics
+  (channel QC, SNR, spectral analysis, trial rejection)
+      ↓
   preprocessing
-  (filter, normalize, segment)
+  (filter, temporal smoothing, normalize, segment)
       ↓
   feature extraction
-  (temporal convolution / linear projection)
+  (temporal convolution / linear projection / firing rate binning)
       ↓
   sequence model
-  (LSTM / Transformer)
+  (GRU / LSTM / Transformer / Hybrid)
       ↓
   character probabilities
   (CTC output head)
@@ -36,12 +39,18 @@ neural signals
   [optional] language model correction
       ↓
   decoded text
+      ↓
+  neural representation analysis
+  (latent embeddings, trajectories, saliency maps)
 ```
 
 ### 1.4 Why This Project Matters
-- Mirrors real neurotechnology pipelines used in clinical BCI research
+- Mirrors real neurotechnology pipelines used in clinical BCI research (e.g., BrainGate, UCSF, Stanford NPTL)
+- Includes signal quality diagnostics — the first step engineers perform in real BCI labs, rarely seen in portfolio projects
+- Replicates the Willett handwriting decoder architecture for authentic comparison against published BCI results
 - Demonstrates neural signal processing, time-series ML, and sequence modeling in a single system
-- Produces an interactive demo that makes the decoding process visible and interpretable
+- Provides neural representation analysis tools (latent embeddings, trajectories, saliency maps) connecting engineering to neuroscience
+- Produces an interactive demo with both decoding visualization and neural analysis capabilities
 - Positions as a strong portfolio project for neurotech, robotics, and AI research roles
 - Lays the foundation for real-time decoding once live hardware is accessible
 
@@ -61,7 +70,7 @@ Build an offline, end-to-end neural text decoder that accepts real ECoG or LFP r
 | Trials decoded correctly (exact match) | 5% | 20% | 40% |
 | Inference latency per trial | < 5s | < 1s | < 200ms |
 | Subjects evaluated | 1 | 3 | All available |
-| Model architectures benchmarked | 1 | 2 | 3 |
+| Model architectures benchmarked | 2 | 3 | 4 |
 
 > **Baseline context:** Published results on UCSF ECoG speech datasets achieve ~3% WER with language model correction. A well-implemented CNN+LSTM system without LM correction typically achieves 20–40% WER on the same data. Matching or approaching this is the target.
 
@@ -137,12 +146,14 @@ data/
 
 ### 4.1 Full Pipeline Overview
 
-The system is composed of five independent, testable modules:
+The system is composed of eight independent, testable modules:
 
 ```
-[1. Data Loader] → [2. Preprocessor] → [3. Feature Extractor] → [4. Sequence Model] → [5. Decoder + LM]
-                                                                          ↓
-                                                                   [6. Demo Interface]
+[1. Data Loader] → [2. Signal Diagnostics] → [3. Preprocessor] → [4. Feature Extractor] → [5. Sequence Model] → [6. Decoder + LM]
+                                                                                                      ↓
+                                                                                         [7. Neural Representation Analysis]
+                                                                                                      ↓
+                                                                                              [8. Demo Interface]
 ```
 
 ### 4.2 Module Responsibilities
@@ -150,12 +161,14 @@ The system is composed of five independent, testable modules:
 | Module | Responsibility | Primary Library |
 |---|---|---|
 | Data Loader | Download, parse, and normalize raw neural + label data | `openneuro-py`, `scipy.io`, `numpy` |
-| Preprocessor | Bandpass filter, z-score normalize, segment into trials | `MNE-Python`, `scipy.signal` |
+| Signal Diagnostics | Evaluate recording quality: channel QC, SNR, spectral analysis, trial rejection, correlation analysis | `scipy.signal`, `numpy`, `matplotlib` |
+| Preprocessor | Bandpass filter, temporal smoothing, z-score normalize, segment into trials | `MNE-Python`, `scipy.signal` |
 | Feature Extractor | Extract temporal features or project to embedding space | `numpy`, `torch` |
-| Sequence Model | Map feature sequences to character probability sequences | `PyTorch` |
+| Sequence Model | Map feature sequences to character probability sequences (GRU, LSTM, Transformer, Hybrid) | `PyTorch` |
 | CTC Decoder | Collapse probability sequences into character strings | `torch.nn.CTCLoss`, `ctcdecode` |
 | LM Correction | Re-rank decoded hypotheses using a character-level LM | `kenlm` or `transformers` |
-| Demo Interface | Accept neural file upload, run inference, display output | `FastAPI`, `Streamlit` |
+| Neural Representation Analysis | Extract and analyze latent embeddings, neural trajectories, electrode saliency, trial similarity | `torch`, `scikit-learn`, `umap-learn` |
+| Demo Interface | Accept neural file upload, run inference, display output + neural analysis | `FastAPI`, `Streamlit` |
 
 ---
 
@@ -182,7 +195,46 @@ The system is composed of five independent, testable modules:
 
 ---
 
-### 5.2 Module 2 — Signal Preprocessing
+### 5.2 Module 2 — Neural Recording Diagnostics
+
+Before any preprocessing or decoding, the system evaluates whether neural recordings are usable. This mirrors the first step in real BCI lab pipelines — engineers at BrainGate, UCSF, and Stanford NPTL routinely run diagnostics before any analysis.
+
+**Diagnostics Pipeline:**
+
+```
+raw neural data
+     ↓
+channel quality analysis (zero variance, excessive variance, flatlines)
+     ↓
+SNR estimation (signal band power / noise band power per channel)
+     ↓
+power spectrum analysis (Welch's method, confirm expected neural bands)
+     ↓
+trial quality detection (artifact flagging, amplitude spike rejection)
+     ↓
+channel correlation analysis (192×192 correlation matrix, reference contamination detection)
+     ↓
+quality report (summary.json + diagnostic plots)
+```
+
+**Outputs:**
+- Per-session quality report: `outputs/quality_reports/session_{id}/summary.json`
+- Diagnostic plots: channel variance heatmap, power spectrum, SNR distribution, trial quality histogram, channel correlation matrix
+- Bad channel list and rejected trial indices (fed into the preprocessing pipeline)
+
+**Key Metrics:**
+
+| Metric | Description |
+|---|---|
+| Good / bad channel count | Channels passing all quality checks |
+| Median SNR | Signal-to-noise ratio across channels |
+| Usable / rejected trial count | Trials passing artifact detection |
+| Line noise contamination level | 60 Hz power relative to baseline |
+| High-gamma power presence | Confirms expected neural signal content |
+
+---
+
+### 5.3 Module 3 — Signal Preprocessing
 
 Neural signals require careful preparation before feature extraction. Steps must be applied in the following order.
 
@@ -208,7 +260,13 @@ Neural signals require careful preparation before feature extraction. Steps must
 - Downsample to a target rate (default: 250 Hz) using `scipy.signal.decimate`
 - Downsampling reduces computational cost while preserving the relevant frequency content
 
-**Step 6: Trial Segmentation**
+**Step 6: Neural Temporal Smoothing**
+- Apply Gaussian kernel smoothing (configurable σ, default 20–40 ms) across the time axis of spike count data
+- Converts noisy spike counts into smooth firing rate estimates
+- This is a standard step in real neural decoding pipelines (used in Willett et al. and most BCI systems)
+- Applied after downsampling but before feature extraction
+
+**Step 7: Trial Segmentation**
 - Segment continuous recordings into per-trial windows using provided onset/offset annotations
 - Add 100 ms pre-onset padding and 200 ms post-offset padding
 - Pad or truncate all trials to a fixed maximum length `T_max` (configurable; default: 2000 timesteps at 250 Hz = 8 seconds)
@@ -225,9 +283,9 @@ Neural signals require careful preparation before feature extraction. Steps must
 
 ---
 
-### 5.3 Module 3 — Feature Extraction
+### 5.4 Module 4 — Feature Extraction
 
-Feature extraction converts raw preprocessed signals into representations suitable for sequence modeling. Two pathways are required.
+Feature extraction converts raw preprocessed signals into representations suitable for sequence modeling. Three pathways are provided. Additionally, Model A (GRU Decoder) and Model D (Hybrid CNN-Transformer) have their own built-in input stages rather than using a separate pathway.
 
 #### Pathway A: Temporal Convolution Features (for CNN-based models)
 - Apply a 1D temporal convolution bank over the time axis independently per channel
@@ -250,11 +308,37 @@ Feature extraction converts raw preprocessed signals into representations suitab
 
 ---
 
-### 5.4 Module 4 — Sequence Models
+### 5.5 Module 5 — Sequence Models
 
-Three model architectures must be implemented as swappable backends with a common interface: `forward(x: Tensor[B, T, C]) → logits: Tensor[B, T, n_classes]`.
+Four model architectures are implemented as swappable backends with a common interface: `forward(x: Tensor[B, T, C]) → logits: Tensor[B, T, n_classes]`.
 
-#### Model A: CNN + LSTM (Baseline)
+#### Model A: Willett-Style GRU Decoder (Primary Baseline)
+
+Replicates the architecture from the Willett handwriting BCI paper. This is the primary baseline because it matches the known high-performance architecture for the Willett dataset, enabling direct comparison against published BCI results.
+
+```
+Input: [B, T, C]
+  ↓
+Linear projection (192 → 256) + ReLU + Dropout
+  [B, T, 256]
+  ↓
+3-layer unidirectional GRU (512 hidden)
+  [B, T, 512]
+  ↓
+Linear projection → character logits
+  [B, T, n_classes]
+```
+
+| Hyperparameter | Default |
+|---|---|
+| Input projection dim | 256 |
+| GRU hidden size | 512 |
+| GRU layers | 3 |
+| Bidirectional | No |
+| Dropout | 0.3 |
+| n_classes | 28 (a–z + space + blank) |
+
+#### Model B: CNN + LSTM (Alternative Baseline)
 
 The classical BCI decoding architecture. Computationally cheap, interpretable, and well-validated on small neural datasets.
 
@@ -279,9 +363,9 @@ Linear projection → character logits
 | LSTM hidden size (H) | 512 |
 | LSTM layers | 2 |
 | Dropout | 0.5 |
-| n_classes | 29 (a–z + space + blank) |
+| n_classes | 28 |
 
-#### Model B: Transformer Encoder (Primary)
+#### Model C: Transformer Encoder
 
 More capable for long sequences. Captures global context that LSTM misses. Matches modern BCI research architectures.
 
@@ -307,9 +391,9 @@ Linear projection → character logits
 | FFN dim | 2048 |
 | Dropout | 0.1 |
 | Max sequence length | 4096 |
-| n_classes | 29 |
+| n_classes | 28 |
 
-#### Model C: Hybrid CNN-Transformer
+#### Model D: Hybrid CNN-Transformer
 
 Combines local feature extraction (CNN) with global sequence modeling (Transformer). Best of both architectures.
 
@@ -330,7 +414,7 @@ The CNN front-end acts as a learned feature extractor and reduces sequence lengt
 
 ---
 
-### 5.5 Module 5 — CTC Loss & Training
+### 5.6 Module 6 — CTC Loss & Training
 
 #### Why CTC
 Neural signals and character labels are not frame-aligned. A 4-second recording of someone imagining the word "hello" does not have a precise timestamp for each letter. Connectionist Temporal Classification (CTC) solves this by marginalizing over all valid alignments during training, requiring only sequence-level labels.
@@ -364,7 +448,7 @@ Neural signals and character labels are not frame-aligned. A 4-second recording 
 
 ---
 
-### 5.6 Module 6 — CTC Decoding
+### 5.7 Module 7 — CTC Decoding
 
 Raw model output is a `[T, n_classes]` probability matrix. Two decoding strategies are required.
 
@@ -386,11 +470,11 @@ h h blank e e l l l blank o → hello
 - Use `ctcdecode` library (`pip install ctcdecode`)
 - Beam width: 100 (configurable)
 - Returns top-k hypotheses with log-probabilities
-- LM integration: pass external KenLM binary for shallow fusion (see Module 7)
+- LM integration: pass external KenLM binary for shallow fusion (see Module 8)
 
 ---
 
-### 5.7 Module 7 — Language Model Correction (Optional but High-Impact)
+### 5.8 Module 8 — Language Model Correction (Optional but High-Impact)
 
 A language model correction layer dramatically improves decoded text accuracy by re-ranking or correcting phonetically/spatially plausible but wrong outputs.
 
@@ -437,7 +521,7 @@ Run the following ablations and report results in a comparison table:
 |---|---|
 | Greedy vs. beam search decoding | Value of beam search |
 | No LM vs. KenLM vs. GPT-2 | Value of language model |
-| CNN+LSTM vs. Transformer vs. Hybrid | Architecture comparison |
+| GRU (Willett) vs. CNN+LSTM vs. Transformer vs. Hybrid | Architecture comparison |
 | With vs. without augmentation | Value of data augmentation |
 | Pathway A vs. B vs. C features | Best feature extraction approach |
 | Within-session vs. cross-session | Generalization of the decoder |
@@ -479,10 +563,13 @@ The demo is a first-class deliverable — it makes the decoding process tangible
 - "Decode" button → calls backend → displays predicted text
 - Shows inference time and confidence
 
-**2. Signal Viewer**
+**2. Signal Viewer & Diagnostics**
 - Interactive time-series plot of uploaded neural channels (plotly)
 - Channel selector (show all or highlight specific electrodes)
 - Color-coded by channel activity level
+- Channel quality indicators: bad channels marked with visual warnings
+- SNR per-channel overlay alongside channel traces
+- Power spectrum viewer for selected channels
 
 **3. Decoding Visualization**
 - Heatmap: `[time_steps × characters]` showing CTC output probabilities over time
@@ -490,12 +577,14 @@ The demo is a first-class deliverable — it makes the decoding process tangible
 - Beam search hypotheses ranked by score
 
 **4. Model Benchmarks**
-- Static table comparing all three architectures on the test set
+- Static table comparing all four architectures on the test set
 - CER / WER bar charts (matplotlib rendered in Streamlit)
 
-**5. t-SNE Embedding Viewer**
-- Pre-computed t-SNE projection of neural features colored by character class
-- Shows whether the model has learned separable representations
+**5. Neural Representation Explorer**
+- 2D embedding scatter plot (t-SNE/UMAP) with points colored by character class, interactive tooltips showing trial details
+- Neural trajectory viewer: select a trial and watch the neural state evolve through latent space during character production
+- Electrode importance heatmap: gradient-based attribution map showing which electrodes drive predictions for a selected character
+- Trial similarity matrix: interactive heatmap showing cosine similarity between trial embeddings, grouped by character
 
 ---
 
@@ -516,8 +605,15 @@ brain-text-decoder/
 │   │   ├── loader.py              # Dataset download + parsing
 │   │   ├── dataset.py             # PyTorch Dataset + DataLoader
 │   │   └── transforms.py         # Augmentation transforms
+│   ├── diagnostics/
+│   │   ├── channel_quality.py     # Bad channel detection (variance, flatline, line noise)
+│   │   ├── snr_analysis.py        # Signal-to-noise ratio estimation
+│   │   ├── spectral_analysis.py   # Power spectral density (Welch's method)
+│   │   ├── trial_quality.py       # Trial artifact detection & rejection
+│   │   ├── correlation_analysis.py # Channel correlation matrix & contamination detection
+│   │   └── report_generator.py    # Full quality report generator (JSON + plots)
 │   ├── preprocessing/
-│   │   ├── filter.py              # Bandpass, notch, downsample
+│   │   ├── filter.py              # Bandpass, notch, downsample, temporal smoothing
 │   │   ├── normalize.py           # Z-score, channel rejection
 │   │   └── segment.py             # Trial segmentation
 │   ├── features/
@@ -526,9 +622,10 @@ brain-text-decoder/
 │   │   └── firing_rate.py         # Pathway C (Willett)
 │   ├── models/
 │   │   ├── base.py                # Common interface
-│   │   ├── cnn_lstm.py            # Model A
-│   │   ├── transformer.py         # Model B
-│   │   └── cnn_transformer.py     # Model C
+│   │   ├── gru_decoder.py         # Model A — Willett-style GRU decoder
+│   │   ├── cnn_lstm.py            # Model B — CNN+LSTM
+│   │   ├── transformer.py         # Model C — Transformer encoder
+│   │   └── cnn_transformer.py     # Model D — Hybrid CNN-Transformer
 │   ├── training/
 │   │   ├── trainer.py             # Training loop, checkpointing
 │   │   ├── ctc_loss.py            # CTC loss wrapper
@@ -540,10 +637,15 @@ brain-text-decoder/
 │   ├── evaluation/
 │   │   ├── metrics.py             # CER, WER, exact match
 │   │   └── ablations.py           # Ablation study runner
+│   ├── analysis/
+│   │   ├── embeddings.py          # Hidden-layer embedding extraction
+│   │   ├── trajectory_plots.py    # Neural state trajectory visualization
+│   │   ├── similarity_matrix.py   # Trial similarity (cosine) heatmaps
+│   │   └── saliency.py            # Gradient-based electrode importance maps
 │   └── visualization/
 │       ├── signal_plots.py        # Channel heatmaps, time series
 │       ├── ctc_plots.py           # Probability timeline, confusion matrix
-│       └── embedding_plots.py     # t-SNE projections
+│       └── embedding_plots.py     # t-SNE/UMAP projections
 │
 ├── app/
 │   ├── api.py                     # FastAPI backend
@@ -551,18 +653,23 @@ brain-text-decoder/
 │
 ├── notebooks/
 │   ├── 01_data_exploration.ipynb
-│   ├── 02_preprocessing_qc.ipynb
-│   ├── 03_model_training.ipynb
-│   ├── 04_evaluation.ipynb
-│   └── 05_demo_visualization.ipynb
+│   ├── 02_signal_diagnostics.ipynb
+│   ├── 03_preprocessing_qc.ipynb
+│   ├── 04_model_training.ipynb
+│   ├── 05_evaluation.ipynb
+│   ├── 05b_neural_representations.ipynb
+│   └── 06_demo_visualization.ipynb
 │
 ├── outputs/
 │   ├── checkpoints/               # Saved model weights
 │   ├── results/                   # JSON + CSV metrics
-│   └── figures/                   # Exported plots
+│   ├── figures/                   # Exported plots
+│   ├── quality_reports/           # Per-session diagnostics (JSON + plots)
+│   └── embeddings/                # Extracted neural embeddings
 │
 ├── scripts/
 │   ├── download_data.sh
+│   ├── run_quality_check.py       # CLI diagnostics entrypoint
 │   ├── train.py                   # CLI training entrypoint
 │   └── evaluate.py                # CLI evaluation entrypoint
 │
@@ -588,7 +695,8 @@ brain-text-decoder/
 | CTC Decoding | ctcdecode | >= 0.4 | Beam search with LM integration |
 | Language Model | kenlm | latest | N-gram LM for beam search |
 | Metrics | jiwer | >= 3.0 | CER / WER computation |
-| Visualization | Matplotlib, Seaborn, Plotly | latest | Signal + metric plots |
+| Dimensionality Reduction | scikit-learn, umap-learn | latest | t-SNE, UMAP, PCA for embedding analysis |
+| Visualization | Matplotlib, Seaborn, Plotly | latest | Signal + metric + diagnostics plots |
 | Data Tables | Pandas | >= 2.0 | Trial index, results tables |
 | Backend API | FastAPI + Uvicorn | latest | Inference API |
 | Frontend Demo | Streamlit | >= 1.30 | Interactive web interface |
@@ -603,16 +711,17 @@ brain-text-decoder/
 | # | Phase | Key Deliverables | Duration | Depends On |
 |---|---|---|---|---|
 | 1 | Environment & Data | conda env, Willett dataset downloaded and parsed, trial index DataFrame, basic signal plots | 2–3 days | — |
-| 2 | Preprocessing Pipeline | Filter, normalize, segment pipeline; QC plots; artifact rejection; verify signal quality | 3–4 days | Phase 1 |
-| 3 | Feature Extraction | All 3 pathways implemented; shapes verified; PCA/t-SNE shows class structure in features | 2–3 days | Phase 2 |
-| 4 | CTC Training (Baseline) | CNN+LSTM trained and converging; greedy CER reported on val set; training curves plotted | 3–5 days | Phase 3 |
-| 5 | Transformer Model | Transformer encoder trained; compared to CNN+LSTM; beam search decoder integrated | 3–5 days | Phase 4 |
-| 6 | LM Correction | KenLM integrated into beam search; WER improvement measured and reported | 2–3 days | Phase 5 |
-| 7 | Evaluation & Ablations | Full ablation table; confusion matrix; per-character error analysis; final test set results | 2–3 days | Phase 6 |
-| 8 | Demo Interface | FastAPI backend + Streamlit frontend; signal viewer; CTC heatmap; deployed locally | 3–5 days | Phase 5 |
-| 9 | Polish & Documentation | README, Dockerfile, notebooks cleaned, results exported, GitHub release | 2–3 days | Phase 8 |
+| 2 | Signal Diagnostics | Channel QC, SNR analysis, spectral analysis, trial quality detection, quality report generation | 2–3 days | Phase 1 |
+| 3 | Preprocessing Pipeline | Filter, temporal smoothing, normalize, segment pipeline; QC plots; artifact rejection | 3–4 days | Phase 2 |
+| 4 | Feature Extraction | All 3 pathways implemented; shapes verified; PCA/t-SNE shows class structure in features | 2–3 days | Phase 3 |
+| 5 | CTC Training (Baseline) | GRU decoder + CNN+LSTM trained and converging; greedy CER reported on val set; training curves plotted | 3–5 days | Phase 4 |
+| 6 | Enhanced Models | Transformer + Hybrid trained; compared to GRU + CNN+LSTM; beam search decoder integrated | 3–5 days | Phase 5 |
+| 7 | LM Correction | KenLM integrated into beam search; WER improvement measured and reported | 2–3 days | Phase 6 |
+| 8 | Evaluation & Ablations | Full 4-model ablation table; neural representation analysis; confusion matrix; per-character error analysis | 3–4 days | Phase 7 |
+| 9 | Demo Interface | FastAPI backend + Streamlit frontend; signal viewer + diagnostics; neural representation explorer; CTC heatmap | 4–6 days | Phase 6 |
+| 10 | Polish & Documentation | README, Dockerfile, notebooks cleaned, results exported, GitHub release | 2–3 days | Phase 9 |
 
-**Total estimated effort: 22–34 focused development days.**
+**Total estimated effort: 26–39 focused development days.**
 
 ---
 
@@ -654,7 +763,7 @@ Where `β` is a word insertion bonus that encourages longer, more complete hypot
 |---|---|---|---|
 | Dataset access changes | High | Researcher-released datasets can disappear or move | Download and cache locally on first access; document DOIs and archive links in README |
 | CTC not converging | High | CTC training can silently fail — loss stays high and model outputs blanks | Monitor blank token probability during training; verify label lengths < input lengths; use `zero_infinity=True`; start with very short trials |
-| Overfitting on small neural datasets | High | Most neural datasets have < 1000 trials per subject — insufficient for large models | Use Model A (CNN+LSTM) first; apply all augmentations; use within-subject evaluation; EarlyStopping |
+| Overfitting on small neural datasets | High | Most neural datasets have < 1000 trials per subject — insufficient for large models | Use Model A (GRU Decoder) or Model B (CNN+LSTM) first; apply all augmentations; use within-subject evaluation; EarlyStopping |
 | Cross-session generalization failure | Medium | Neural recordings drift between sessions — models trained on session 1 may fail on session 2 | Document this limitation clearly; implement z-score normalization per session; explore Riemannian alignment as future work |
 | Data format inconsistency | Medium | UCSF and OpenNeuro datasets have very different formats and metadata conventions | Build a unified adapter layer per dataset; test each adapter with a format validation script |
 | CTC decoder library compatibility | Medium | `ctcdecode` has build issues on some platforms (requires C++ compilation) | Provide fallback to greedy decoding; include pre-built wheels in Docker image |
