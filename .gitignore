@@ -32,3 +32,5 @@ Thumbs.db
 
 # Conda
 *.conda
+
+._docs/dev-summaries.md

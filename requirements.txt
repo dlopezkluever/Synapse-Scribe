@@ -13,6 +13,8 @@ jiwer>=3.0
 streamlit>=1.30
 fastapi
 uvicorn
+python-multipart
+httpx
 pytest
 h5py
 requests
