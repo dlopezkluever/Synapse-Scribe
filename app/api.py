@@ -194,17 +194,28 @@ def _run_inference(
 
 
 def _generate_demo_sample(n_channels: int = 192, t_max: int = 2000) -> np.ndarray:
-    """Generate or load a demo sample for the /decode/demo endpoint."""
-    # Check for saved demo sample
-    demo_path = Path("data/demo_sample.npy")
-    if demo_path.exists():
-        return np.load(demo_path)
+    """Generate or load a demo sample for the /decode/demo endpoint.
 
-    # Check for any trial data in the data directory
-    data_dir = Path("data")
-    npy_files = list(data_dir.rglob("trial_*_signals.npy"))
-    if npy_files:
-        return np.load(npy_files[0])
+    When called with non-default arguments, always generates a synthetic signal
+    (used by tests). When called with defaults, tries to load real data first.
+    """
+    use_defaults = (n_channels == 192 and t_max == 2000)
+
+    if use_defaults:
+        # Check for saved demo sample
+        demo_path = Path("data/demo_sample.npy")
+        if demo_path.exists():
+            return np.load(demo_path)
+
+        # Check for any trial data in the data directory
+        data_dir = Path("data")
+        npy_files = list(data_dir.rglob("trial_*_signals.npy"))
+        if npy_files:
+            sample = np.load(npy_files[0]).astype(np.float32)
+            # Truncate to t_max if too long (keep inference fast for demo)
+            if sample.shape[0] > t_max:
+                sample = sample[:t_max]
+            return sample
 
     # Generate synthetic demo signal
     rng = np.random.RandomState(42)
