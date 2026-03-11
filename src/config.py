@@ -107,7 +107,7 @@ class Config:
             raise ValueError("target_fs must be positive")
 
         # Model type
-        valid_models = {"cnn_lstm", "transformer", "cnn_transformer"}
+        valid_models = {"gru_decoder", "cnn_lstm", "transformer", "cnn_transformer"}
         if self.model_type not in valid_models:
             raise ValueError(f"model_type must be one of {valid_models}")
 
