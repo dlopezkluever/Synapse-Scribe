@@ -1,0 +1,38 @@
+version: "3.9"
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+      - ./outputs:/app/outputs
+    environment:
+      - PYTHONPATH=/app
+    restart: unless-stopped
+
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./data:/app/data
+      - ./outputs:/app/outputs
+    environment:
+      - PYTHONPATH=/app
+      - API_URL=http://api:8000
+    command:
+      [
+        "streamlit", "run", "app/dashboard.py",
+        "--server.port", "8501",
+        "--server.address", "0.0.0.0",
+        "--server.headless", "true"
+      ]
+    depends_on:
+      - api
+    restart: unless-stopped
