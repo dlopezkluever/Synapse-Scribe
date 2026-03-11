@@ -1,0 +1,41 @@
+# Version control
+.git
+.gitignore
+
+# Python caches
+__pycache__
+*.pyc
+*.pyo
+*.egg-info
+dist/
+build/
+
+# Data and outputs (mounted as volumes instead)
+data/
+outputs/
+
+# Environment / secrets
+.env
+.env.*
+environment.yml
+
+# IDE and OS
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+Thumbs.db
+.DS_Store
+
+# Docs (not needed at runtime)
+._docs/
+notebooks/
+
+# Tests (not needed in production image)
+tests/
+
+# Docker files themselves
+Dockerfile
+docker-compose.yml
+.dockerignore
