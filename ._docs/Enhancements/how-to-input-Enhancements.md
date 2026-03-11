@@ -336,3 +336,51 @@ similarity matrices
 Expand the dashboard with **analysis visualizations**, not just decoding.
 
 ---
+
+---------------
+
+---
+Final Last Touch Fixes:
+
+  ┌─────┬──────────────────────┬──────────────────────────────┐   
+  │  #  │        Issue         │             Fix              │   
+  ├─────┼──────────────────────┼──────────────────────────────┤   
+  │     │ Pathway table had    │ Updated to GRU=A,            │   
+  │ 1-2 │ old model names      │ CNN+LSTM=B, Transformer=C,   │   
+  │     │ A/B/C                │ Hybrid=D with GRU's built-in │   
+  │     │                      │  projection added            │   
+  ├─────┼──────────────────────┼──────────────────────────────┤   
+  │ 3   │ Phase 2 goal said    │ Changed to "four models"     │   
+  │     │ "three models"       │                              │   
+  ├─────┼──────────────────────┼──────────────────────────────┤   
+  │     │ Section 2.1          │ Changed to "Model B          │   
+  │ 4   │ referenced "Model A  │ (CNN+LSTM)"                  │   
+  │     │ (CNN+LSTM)"          │                              │   
+  ├─────┼──────────────────────┼──────────────────────────────┤   
+  │     │ Feature ablation     │ Changed to "Model D's" +     │   
+  │ 5   │ referenced "Model    │ added "Model A's built-in    │   
+  │     │ C's CNN front-end"   │ linear projection"           │   
+  ├─────┼──────────────────────┼──────────────────────────────┤   
+  │     │ PRD risks said       │ Changed to "Model A (GRU     │   
+  │ 6   │ "Model A (CNN+LSTM)" │ Decoder) or Model B          │   
+  │     │                      │ (CNN+LSTM)"                  │   
+  ├─────┼──────────────────────┼──────────────────────────────┤   
+  │     │ PRD CTC section said │                              │   
+  │ 7   │  "see Module 7" for  │ Changed to "see Module 8"    │   
+  │     │ LM                   │                              │   
+  ├─────┼──────────────────────┼──────────────────────────────┤   
+  │     │ PRD said "Two        │ Changed to "Three pathways"  │   
+  │ 8   │ pathways"            │ + noted Models A and D have  │   
+  │     │                      │ built-in input stages        │   
+  ├─────┼──────────────────────┼──────────────────────────────┤   
+  │     │ Notebook named 04b   │                              │   
+  │ 9   │ in 3.3b but 05b in   │ Changed 3.3b to 05b to match │   
+  │     │ 5.2                  │                              │   
+  ├─────┼──────────────────────┼──────────────────────────────┤   
+  │ 10  │ GRU decoder missing  │ Added as row with built-in   │   
+  │     │ from pathway table   │ linear projection            │   
+  ├─────┼──────────────────────┼──────────────────────────────┤   
+  │     │ Diagnostics vs       │ 1.2 now consumes diagnostics │   
+  │ 11  │ preprocessing        │  output, with inline         │   
+  │     │ overlap              │ fallback                     │   
+  └─────┴──────────────────────┴──────────────────────────────┘   
