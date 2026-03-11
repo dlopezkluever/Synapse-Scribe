@@ -22,6 +22,8 @@ from src.data.dataset import create_dataloaders, ctc_collate_fn, NeuralTrialData
 from src.data.transforms import get_training_transforms
 from src.models.gru_decoder import GRUDecoder
 from src.models.cnn_lstm import CNNLSTM
+from src.models.transformer import TransformerDecoder
+from src.models.cnn_transformer import CNNTransformer
 from src.training.trainer import Trainer
 
 logging.basicConfig(
@@ -34,6 +36,8 @@ logger = logging.getLogger(__name__)
 MODEL_REGISTRY = {
     "gru_decoder": GRUDecoder,
     "cnn_lstm": CNNLSTM,
+    "transformer": TransformerDecoder,
+    "cnn_transformer": CNNTransformer,
 }
 
 
@@ -100,6 +104,28 @@ def main() -> None:
             lstm_hidden=cfg.lstm_hidden,
             lstm_layers=cfg.lstm_layers,
             dropout=cfg.lstm_dropout,
+        )
+    elif args.model == "transformer":
+        model = ModelClass(
+            n_channels=args.n_channels,
+            n_classes=cfg.n_classes,
+            d_model=cfg.d_model,
+            n_heads=cfg.n_heads,
+            n_layers=cfg.transformer_layers,
+            ffn_dim=cfg.ffn_dim,
+            dropout=cfg.transformer_dropout,
+            max_seq_len=cfg.max_seq_len,
+        )
+    elif args.model == "cnn_transformer":
+        model = ModelClass(
+            n_channels=args.n_channels,
+            n_classes=cfg.n_classes,
+            d_model=cfg.d_model,
+            n_heads=cfg.n_heads,
+            n_transformer_layers=cfg.hybrid_transformer_layers,
+            ffn_dim=cfg.ffn_dim,
+            dropout=cfg.transformer_dropout,
+            max_seq_len=cfg.max_seq_len,
         )
     else:
         model = ModelClass(n_channels=args.n_channels, n_classes=cfg.n_classes)
