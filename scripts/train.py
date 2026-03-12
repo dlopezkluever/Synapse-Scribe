@@ -90,6 +90,17 @@ def parse_args() -> argparse.Namespace:
                         help="Input projection dim (default: 256)")
     parser.add_argument("--dropout", type=float, default=None,
                         help="Dropout rate (default: 0.3)")
+    # W&B experiment tracking
+    parser.add_argument("--wandb", action="store_true",
+                        help="Enable Weights & Biases logging")
+    parser.add_argument("--wandb-project", type=str, default="brain-text-decoder",
+                        help="W&B project name")
+    parser.add_argument("--wandb-entity", type=str, default=None,
+                        help="W&B entity (team or username)")
+    parser.add_argument("--wandb-run-name", type=str, default=None,
+                        help="W&B run name (auto-generated if not set)")
+    parser.add_argument("--wandb-tags", type=str, nargs="*", default=None,
+                        help="W&B run tags (e.g. --wandb-tags baseline gru)")
     return parser.parse_args()
 
 
@@ -239,6 +250,11 @@ def main() -> None:
         checkpoint_dir=args.checkpoint_dir,
         mixed_precision=cfg.mixed_precision,
         device=args.device,
+        wandb_enabled=args.wandb,
+        wandb_project=args.wandb_project,
+        wandb_entity=args.wandb_entity,
+        wandb_run_name=args.wandb_run_name,
+        wandb_tags=args.wandb_tags,
     )
 
     history = trainer.train()
