@@ -1,6 +1,7 @@
 """Training loop with validation, checkpointing, and early stopping.
 
 Supports CTC-based training for all decoder models.
+Optional Weights & Biases integration for experiment tracking.
 """
 
 from __future__ import annotations
@@ -9,7 +10,7 @@ import logging
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional
 
 import torch
 import torch.nn as nn
@@ -21,6 +22,64 @@ from src.decoding.greedy import greedy_decode_batch
 from src.evaluation.metrics import compute_cer
 
 logger = logging.getLogger(__name__)
+
+# ---------------------------------------------------------------------------
+# W&B helpers (lazy import to avoid hard dependency)
+# ---------------------------------------------------------------------------
+
+def _init_wandb(
+    config: dict,
+    project: str = "brain-text-decoder",
+    entity: Optional[str] = None,
+    run_name: Optional[str] = None,
+    tags: Optional[list[str]] = None,
+) -> Any:
+    """Initialize a W&B run.  Returns the ``wandb.run`` object or *None*."""
+    try:
+        import wandb
+    except ImportError:
+        logger.warning("wandb is not installed — skipping W&B logging")
+        return None
+
+    run = wandb.init(
+        project=project,
+        entity=entity,
+        name=run_name,
+        tags=tags or [],
+        config=config,
+        reinit=True,
+    )
+    logger.info("W&B run initialized: %s", run.url)
+    return run
+
+
+def _log_wandb(run: Any, metrics: dict, step: int) -> None:
+    """Log metrics to W&B if run is active."""
+    if run is None:
+        return
+    import wandb  # already imported if run is not None
+    wandb.log(metrics, step=step)
+
+
+def _log_wandb_table(run: Any, predictions: list[str], references: list[str], epoch: int) -> None:
+    """Log sample decoded outputs as a W&B Table."""
+    if run is None:
+        return
+    import wandb
+
+    n_samples = min(20, len(predictions))
+    table = wandb.Table(columns=["epoch", "prediction", "reference"])
+    for i in range(n_samples):
+        table.add_data(epoch, predictions[i][:100], references[i][:100])
+    wandb.log({"decoded_samples": table}, step=epoch)
+
+
+def _finish_wandb(run: Any) -> None:
+    """Finish the W&B run."""
+    if run is None:
+        return
+    import wandb
+    wandb.finish()
 
 
 @dataclass
@@ -65,6 +124,13 @@ class Trainer:
         checkpoint_dir: str = "./outputs/checkpoints",
         mixed_precision: bool = True,
         device: Optional[str] = None,
+        # W&B parameters
+        wandb_enabled: bool = False,
+        wandb_project: str = "brain-text-decoder",
+        wandb_entity: Optional[str] = None,
+        wandb_run_name: Optional[str] = None,
+        wandb_tags: Optional[list[str]] = None,
+        wandb_log_interval: int = 1,
     ):
         self.model = model
         self.train_loader = train_loader
@@ -74,6 +140,7 @@ class Trainer:
         self.patience = early_stopping_patience
         self.checkpoint_dir = Path(checkpoint_dir)
         self.checkpoint_dir.mkdir(parents=True, exist_ok=True)
+        self.wandb_log_interval = wandb_log_interval
 
         # Device
         if device is None:
@@ -105,6 +172,33 @@ class Trainer:
         self.best_val_cer = float("inf")
         self.epochs_without_improvement = 0
         self.global_step = 0
+
+        # W&B
+        self.wandb_run = None
+        if wandb_enabled:
+            model_name = model.__class__.__name__
+            n_params = sum(p.numel() for p in model.parameters())
+            wandb_config = {
+                "model": model_name,
+                "n_parameters": n_params,
+                "learning_rate": learning_rate,
+                "weight_decay": weight_decay,
+                "max_epochs": max_epochs,
+                "warmup_steps": warmup_steps,
+                "grad_clip_max_norm": grad_clip_max_norm,
+                "early_stopping_patience": early_stopping_patience,
+                "mixed_precision": mixed_precision,
+                "device": str(self.device),
+                "train_batches": len(train_loader),
+                "val_batches": len(val_loader),
+            }
+            self.wandb_run = _init_wandb(
+                config=wandb_config,
+                project=wandb_project,
+                entity=wandb_entity,
+                run_name=wandb_run_name or f"{model_name}_run",
+                tags=wandb_tags,
+            )
 
     def train_one_epoch(self, epoch: int) -> float:
         """Run one training epoch. Returns average training loss."""
@@ -241,12 +335,30 @@ class Trainer:
                 for i in range(n_show):
                     logger.info("  [%d] pred=%-30s ref=%s", i, repr(preds[i][:50]), repr(refs[i][:50]))
 
+            # W&B logging
+            if epoch % self.wandb_log_interval == 0:
+                _log_wandb(self.wandb_run, {
+                    "train/loss": train_loss,
+                    "val/loss": val_loss,
+                    "val/cer": val_cer,
+                    "train/learning_rate": lr,
+                    "train/epoch": epoch,
+                    "train/global_step": self.global_step,
+                    "epoch_time_s": elapsed,
+                }, step=epoch)
+                if preds and refs:
+                    _log_wandb_table(self.wandb_run, preds, refs, epoch)
+
             # Check for best model
             if val_cer < self.best_val_cer:
                 self.best_val_cer = val_cer
                 self.epochs_without_improvement = 0
                 best_path = self.checkpoint_dir / f"{model_name}_best.pt"
                 self.save_checkpoint(best_path, epoch, val_cer)
+                _log_wandb(self.wandb_run, {
+                    "best/val_cer": val_cer,
+                    "best/epoch": epoch,
+                }, step=epoch)
             else:
                 self.epochs_without_improvement += 1
 
@@ -259,4 +371,9 @@ class Trainer:
                 break
 
         logger.info("Training complete. Best val CER: %.4f", self.best_val_cer)
+        _log_wandb(self.wandb_run, {
+            "final/best_val_cer": self.best_val_cer,
+            "final/total_epochs": len(self.history.train_losses),
+        }, step=len(self.history.train_losses))
+        _finish_wandb(self.wandb_run)
         return self.history
