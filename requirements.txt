@@ -18,3 +18,5 @@ httpx
 pytest
 h5py
 requests
+wandb
+transformers
