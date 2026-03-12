@@ -19,7 +19,7 @@ from torch.utils.data import DataLoader
 from src.training.ctc_loss import CTCLossWrapper
 from src.training.scheduler import cosine_warmup_scheduler
 from src.decoding.greedy import greedy_decode_batch
-from src.evaluation.metrics import compute_cer
+from src.evaluation.metrics import compute_cer, compute_wer
 
 logger = logging.getLogger(__name__)
 
@@ -89,6 +89,7 @@ class TrainHistory:
     train_losses: list[float] = field(default_factory=list)
     val_losses: list[float] = field(default_factory=list)
     val_cers: list[float] = field(default_factory=list)
+    val_wers: list[float] = field(default_factory=list)
     learning_rates: list[float] = field(default_factory=list)
 
 
@@ -268,10 +269,11 @@ class Trainer:
 
         avg_loss = total_loss / max(n_batches, 1)
 
-        # Compute CER
+        # Compute CER and WER
         cer = compute_cer(all_predictions, all_references) if all_references else 1.0
+        wer = compute_wer(all_predictions, all_references) if all_references else 1.0
 
-        return avg_loss, cer, all_predictions, all_references
+        return avg_loss, cer, wer, all_predictions, all_references
 
     def save_checkpoint(self, path: Path, epoch: int, val_cer: float) -> None:
         """Save model checkpoint."""
@@ -312,21 +314,22 @@ class Trainer:
             train_loss = self.train_one_epoch(epoch)
 
             # Validate
-            val_loss, val_cer, preds, refs = self.validate()
+            val_loss, val_cer, val_wer, preds, refs = self.validate()
 
             # Record
             lr = self.optimizer.param_groups[0]["lr"]
             self.history.train_losses.append(train_loss)
             self.history.val_losses.append(val_loss)
             self.history.val_cers.append(val_cer)
+            self.history.val_wers.append(val_wer)
             self.history.learning_rates.append(lr)
 
             elapsed = time.time() - t0
 
             logger.info(
                 "Epoch %d/%d — train_loss=%.4f, val_loss=%.4f, val_cer=%.4f, "
-                "lr=%.2e, time=%.1fs",
-                epoch, self.max_epochs, train_loss, val_loss, val_cer, lr, elapsed,
+                "val_wer=%.4f, lr=%.2e, time=%.1fs",
+                epoch, self.max_epochs, train_loss, val_loss, val_cer, val_wer, lr, elapsed,
             )
 
             # Show sample predictions
@@ -341,6 +344,7 @@ class Trainer:
                     "train/loss": train_loss,
                     "val/loss": val_loss,
                     "val/cer": val_cer,
+                    "val/wer": val_wer,
                     "train/learning_rate": lr,
                     "train/epoch": epoch,
                     "train/global_step": self.global_step,
