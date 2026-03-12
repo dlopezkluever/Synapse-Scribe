@@ -1,13 +1,14 @@
 """Language model correction via shallow fusion.
 
-Supports KenLM character-level n-gram models for re-scoring beam search
-hypotheses. Falls back gracefully when KenLM is not installed.
+Supports KenLM character-level n-gram models and GPT-2 neural LM for
+re-scoring beam search hypotheses. Falls back gracefully when optional
+dependencies are not installed.
 """
 
 from __future__ import annotations
 
 import logging
-from dataclasses import dataclass
+import math
 from pathlib import Path
 from typing import Optional
 
@@ -65,9 +66,72 @@ class DummyLMScorer:
         return 0.0
 
 
+class GPT2Scorer:
+    """Score text using a pre-trained GPT-2 model from HuggingFace.
+
+    Computes the mean per-token log-probability of the input text, which
+    provides a length-normalized language model score suitable for
+    re-ranking CTC beam search hypotheses.
+
+    Args:
+        model_name: HuggingFace model identifier (default: ``"gpt2"``).
+        device: PyTorch device string (default: auto-detect).
+    """
+
+    def __init__(self, model_name: str = "gpt2", device: Optional[str] = None):
+        try:
+            import torch
+            from transformers import GPT2LMHeadModel, GPT2TokenizerFast
+        except ImportError:
+            raise ImportError(
+                "transformers is not installed. Install via: "
+                "pip install transformers"
+            )
+
+        self.model_name = model_name
+        if device is None:
+            self._device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        else:
+            self._device = torch.device(device)
+
+        logger.info("Loading GPT-2 model '%s' on %s ...", model_name, self._device)
+        self._tokenizer = GPT2TokenizerFast.from_pretrained(model_name)
+        self._model = GPT2LMHeadModel.from_pretrained(model_name)
+        self._model.to(self._device)
+        self._model.eval()
+        logger.info("GPT-2 model loaded (%d parameters)",
+                     sum(p.numel() for p in self._model.parameters()))
+
+    def score(self, text: str) -> float:
+        """Compute mean per-token log-probability of *text*.
+
+        Returns 0.0 for empty strings. The score is a negative number
+        (higher / closer to zero is better), consistent with the
+        KenLMScorer interface.
+        """
+        if not text or not text.strip():
+            return 0.0
+
+        import torch
+
+        encodings = self._tokenizer(text, return_tensors="pt")
+        input_ids = encodings["input_ids"].to(self._device)
+
+        if input_ids.shape[1] == 0:
+            return 0.0
+
+        with torch.no_grad():
+            outputs = self._model(input_ids, labels=input_ids)
+            # outputs.loss is the mean cross-entropy over all tokens
+            # Negate because CE loss = -log_prob
+            neg_log_likelihood = outputs.loss.item()
+
+        return -neg_log_likelihood  # return log-prob (higher is better)
+
+
 def rescore_hypotheses(
     hypotheses: list[Hypothesis],
-    lm_scorer: KenLMScorer | DummyLMScorer,
+    lm_scorer: KenLMScorer | DummyLMScorer | GPT2Scorer,
     alpha: float = 0.5,
     beta: float = 0.0,
 ) -> list[Hypothesis]:
@@ -98,15 +162,31 @@ def rescore_hypotheses(
     return rescored
 
 
-def load_lm_scorer(model_path: Optional[str | Path] = None) -> KenLMScorer | DummyLMScorer:
+def load_lm_scorer(
+    model_path: Optional[str | Path] = None,
+    scorer_type: str = "kenlm",
+    device: Optional[str] = None,
+) -> KenLMScorer | DummyLMScorer | GPT2Scorer:
     """Load a language model scorer, falling back to DummyLMScorer.
 
     Args:
-        model_path: Path to KenLM model. If None, returns DummyLMScorer.
+        model_path: Path to KenLM model, or HuggingFace model name for GPT-2.
+            If None, returns DummyLMScorer.
+        scorer_type: ``"kenlm"`` or ``"gpt2"``.
+        device: Device for GPT-2 (ignored for KenLM).
 
     Returns:
-        A scorer object with a .score(text) method.
+        A scorer object with a ``.score(text)`` method.
     """
+    if scorer_type == "gpt2":
+        model_name = str(model_path) if model_path else "gpt2"
+        try:
+            return GPT2Scorer(model_name=model_name, device=device)
+        except (ImportError, RuntimeError, OSError) as e:
+            logger.warning("Could not load GPT-2: %s; using DummyLMScorer", e)
+            return DummyLMScorer()
+
+    # Default: KenLM
     if model_path is None:
         logger.info("No LM model path provided; using DummyLMScorer")
         return DummyLMScorer()
