@@ -81,6 +81,18 @@ class Config:
     aug_channel_dropout_rate: float = 0.1
     aug_gaussian_noise_std: float = 0.01
 
+    # --- W&B experiment tracking ---
+    wandb_enabled: bool = False
+    wandb_project: str = "brain-text-decoder"
+    wandb_entity: Optional[str] = None
+    wandb_run_name: Optional[str] = None
+    wandb_tags: List[str] = field(default_factory=list)
+    wandb_log_interval: int = 1  # log every N epochs
+
+    # --- GPT-2 LM re-ranking ---
+    gpt2_model_name: str = "gpt2"  # HuggingFace model ID
+    gpt2_lambda: float = 0.5  # interpolation weight: λ*CTC + (1-λ)*LM
+
     # --- paths ---
     checkpoint_dir: str = "./outputs/checkpoints"
     results_dir: str = "./outputs/results"
