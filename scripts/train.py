@@ -3,6 +3,15 @@
 Usage:
     python scripts/train.py --model gru_decoder --dataset willett --epochs 200
     python scripts/train.py --model cnn_lstm --epochs 100 --batch-size 8
+
+    # Train on single-letter trials only (fast, good for validation):
+    python scripts/train.py --model gru_decoder --trial-type letters --t-max 250
+
+    # Train on sentences only (slower, use larger t-max):
+    python scripts/train.py --model gru_decoder --trial-type sentences --t-max 5000 --batch-size 4
+
+    # Filter out trials longer than t-max (avoids truncation/label mismatch):
+    python scripts/train.py --model gru_decoder --filter-by-length --t-max 4000
 """
 
 from __future__ import annotations
@@ -15,6 +24,7 @@ from pathlib import Path
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+import numpy as np
 import torch
 
 from src.config import load_config
@@ -57,7 +67,77 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--checkpoint-dir", type=str, default="./outputs/checkpoints")
     parser.add_argument("--config", type=str, default=None, help="Path to config YAML")
     parser.add_argument("--device", type=str, default=None)
+    parser.add_argument(
+        "--trial-type", type=str, default="all",
+        choices=["all", "letters", "sentences"],
+        help="Filter by trial type: 'letters' (single chars, fast), "
+             "'sentences' (multi-char), or 'all' (default)",
+    )
+    parser.add_argument(
+        "--filter-by-length", action="store_true",
+        help="Drop trials longer than t-max (prevents truncation/label mismatch)",
+    )
+    parser.add_argument(
+        "--normalize", action="store_true",
+        help="Z-score normalize per channel (recommended for raw spike count data)",
+    )
+    # Model hyperparameters (override defaults for faster training)
+    parser.add_argument("--hidden-size", type=int, default=None,
+                        help="GRU/LSTM hidden size (default: 512 for GRU, config for others)")
+    parser.add_argument("--n-layers", type=int, default=None,
+                        help="Number of recurrent layers (default: 3 for GRU)")
+    parser.add_argument("--proj-dim", type=int, default=None,
+                        help="Input projection dim (default: 256)")
+    parser.add_argument("--dropout", type=float, default=None,
+                        help="Dropout rate (default: 0.3)")
     return parser.parse_args()
+
+
+def _filter_trials(trial_index, trial_type: str, t_max: int, filter_by_length: bool):
+    """Filter trial index by type and/or length."""
+    import pandas as pd
+
+    original_count = len(trial_index)
+
+    # Filter by trial type using label length as proxy
+    if trial_type != "all":
+        label_lens = []
+        for _, row in trial_index.iterrows():
+            text = Path(row["label_path"]).read_text(encoding="utf-8").strip()
+            label_lens.append(len(text))
+        trial_index = trial_index.copy()
+        trial_index["_label_len"] = label_lens
+
+        if trial_type == "letters":
+            trial_index = trial_index[trial_index["_label_len"] <= 1]
+        elif trial_type == "sentences":
+            trial_index = trial_index[trial_index["_label_len"] > 1]
+
+        trial_index = trial_index.drop(columns=["_label_len"]).reset_index(drop=True)
+        logger.info("Trial type filter '%s': %d -> %d trials",
+                     trial_type, original_count, len(trial_index))
+
+    # Filter by length
+    if filter_by_length and "n_timesteps" in trial_index.columns:
+        before = len(trial_index)
+        trial_index = trial_index[trial_index["n_timesteps"] <= t_max].reset_index(drop=True)
+        logger.info("Length filter (t_max=%d): %d -> %d trials",
+                     t_max, before, len(trial_index))
+
+    if len(trial_index) == 0:
+        raise ValueError("No trials remain after filtering! Adjust --trial-type or --t-max.")
+
+    # Log stats
+    if "n_timesteps" in trial_index.columns:
+        ts = trial_index["n_timesteps"]
+        logger.info("Signal lengths: min=%d, max=%d, mean=%d, median=%d",
+                     ts.min(), ts.max(), int(ts.mean()), int(ts.median()))
+        n_truncated = (ts > t_max).sum()
+        if n_truncated > 0:
+            logger.warning("%d/%d trials will be truncated from >%d to %d timesteps",
+                           n_truncated, len(trial_index), t_max, t_max)
+
+    return trial_index
 
 
 def main() -> None:
@@ -71,6 +151,11 @@ def main() -> None:
     logger.info("Loading dataset...")
     trial_index = load_willett_dataset(cfg)
     logger.info("Loaded %d trials", len(trial_index))
+
+    # Filter trials
+    trial_index = _filter_trials(
+        trial_index, args.trial_type, args.t_max, args.filter_by_length
+    )
 
     # Create data loaders with augmentation for training
     train_transform = get_training_transforms(
@@ -87,13 +172,21 @@ def main() -> None:
         batch_size=args.batch_size,
         split_ratios=cfg.split_ratios,
         train_transform=train_transform,
+        normalize=args.normalize,
     )
 
-    # Create model
+    # Create model (CLI args override defaults for faster training)
     ModelClass = MODEL_REGISTRY[args.model]
+    dropout = args.dropout if args.dropout is not None else 0.3
 
     if args.model == "gru_decoder":
-        model = ModelClass(n_channels=args.n_channels, n_classes=cfg.n_classes)
+        model = ModelClass(
+            n_channels=args.n_channels, n_classes=cfg.n_classes,
+            proj_dim=args.proj_dim or 256,
+            hidden_size=args.hidden_size or 512,
+            n_layers=args.n_layers or 3,
+            dropout=dropout,
+        )
     elif args.model == "cnn_lstm":
         model = ModelClass(
             n_channels=args.n_channels,
@@ -101,9 +194,9 @@ def main() -> None:
             conv_channels=cfg.conv_channels,
             conv_kernel_size=cfg.conv_kernel_size,
             conv_layers=cfg.conv_layers,
-            lstm_hidden=cfg.lstm_hidden,
-            lstm_layers=cfg.lstm_layers,
-            dropout=cfg.lstm_dropout,
+            lstm_hidden=args.hidden_size or cfg.lstm_hidden,
+            lstm_layers=args.n_layers or cfg.lstm_layers,
+            dropout=args.dropout if args.dropout is not None else cfg.lstm_dropout,
         )
     elif args.model == "transformer":
         model = ModelClass(
@@ -111,9 +204,9 @@ def main() -> None:
             n_classes=cfg.n_classes,
             d_model=cfg.d_model,
             n_heads=cfg.n_heads,
-            n_layers=cfg.transformer_layers,
+            n_layers=args.n_layers or cfg.transformer_layers,
             ffn_dim=cfg.ffn_dim,
-            dropout=cfg.transformer_dropout,
+            dropout=args.dropout if args.dropout is not None else cfg.transformer_dropout,
             max_seq_len=cfg.max_seq_len,
         )
     elif args.model == "cnn_transformer":
@@ -122,9 +215,9 @@ def main() -> None:
             n_classes=cfg.n_classes,
             d_model=cfg.d_model,
             n_heads=cfg.n_heads,
-            n_transformer_layers=cfg.hybrid_transformer_layers,
+            n_transformer_layers=args.n_layers or cfg.hybrid_transformer_layers,
             ffn_dim=cfg.ffn_dim,
-            dropout=cfg.transformer_dropout,
+            dropout=args.dropout if args.dropout is not None else cfg.transformer_dropout,
             max_seq_len=cfg.max_seq_len,
         )
     else:
