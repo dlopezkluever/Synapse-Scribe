@@ -101,7 +101,9 @@ class TestNeuralTrialDataset:
     def test_features_shape(self, trial_data):
         ds = NeuralTrialDataset(trial_data, t_max=200)
         item = ds[0]
-        assert item["features"].shape == (200, 32)
+        T_actual = trial_data.iloc[0]["n_timesteps"]
+        expected_T = min(T_actual, 200)
+        assert item["features"].shape == (expected_T, 32)
 
     def test_target_is_tensor(self, trial_data):
         ds = NeuralTrialDataset(trial_data, t_max=200)
@@ -143,7 +145,8 @@ class TestCollate:
 
     def test_collate_shapes(self, batch):
         collated = ctc_collate_fn(batch)
-        assert collated["features"].shape == (4, 200, 16)
+        # Dynamic padding: features padded to max length in batch (150), not t_max (200)
+        assert collated["features"].shape == (4, 150, 16)
         assert collated["input_lengths"].shape == (4,)
         assert collated["target_lengths"].shape == (4,)
         # "cat" = 3 chars × 4 samples = 12 targets
