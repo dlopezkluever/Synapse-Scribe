@@ -2,6 +2,9 @@
 
 Architecture: 3-layer Conv1D(256, kernel=7, BN+ReLU) -> BiLSTM(512, 2 layers) -> Linear -> logits.
 Uses the firing-rate-binned Willett data (Pathway C output) as input.
+
+With use_downsample=True (default), the first two conv layers use stride=2
+for 4x temporal reduction to improve CTC blank ratios.
 """
 
 from __future__ import annotations
@@ -20,11 +23,13 @@ class CNNBlock(nn.Module):
         in_channels: int,
         out_channels: int,
         kernel_size: int = 7,
+        stride: int = 1,
         dropout: float = 0.5,
     ):
         super().__init__()
         self.conv = nn.Conv1d(
             in_channels, out_channels, kernel_size,
+            stride=stride,
             padding=kernel_size // 2,
         )
         self.bn = nn.BatchNorm1d(out_channels)
@@ -32,7 +37,7 @@ class CNNBlock(nn.Module):
         self.dropout = nn.Dropout(dropout)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """x: [B, C, T] -> [B, C_out, T]."""
+        """x: [B, C, T] -> [B, C_out, T']."""
         return self.dropout(self.relu(self.bn(self.conv(x))))
 
 
@@ -48,6 +53,7 @@ class CNNLSTM(BaseDecoder):
         lstm_hidden: LSTM hidden size (default 512).
         lstm_layers: Number of LSTM layers (default 2).
         dropout: Dropout probability (default 0.5).
+        use_downsample: If True, first two conv layers use stride=2 (4x reduction).
     """
 
     def __init__(
@@ -60,14 +66,20 @@ class CNNLSTM(BaseDecoder):
         lstm_hidden: int = 512,
         lstm_layers: int = 2,
         dropout: float = 0.5,
+        use_downsample: bool = True,
     ):
         super().__init__(n_channels, n_classes)
+        self._use_downsample = use_downsample
 
         # CNN front-end
         cnn_blocks = []
         in_ch = n_channels
-        for _ in range(conv_layers):
-            cnn_blocks.append(CNNBlock(in_ch, conv_channels, conv_kernel_size, dropout))
+        for i in range(conv_layers):
+            # First two layers get stride=2 when downsampling
+            stride = 2 if (use_downsample and i < 2) else 1
+            cnn_blocks.append(
+                CNNBlock(in_ch, conv_channels, conv_kernel_size, stride, dropout)
+            )
             in_ch = conv_channels
         self.cnn = nn.Sequential(*cnn_blocks)
 
@@ -84,13 +96,17 @@ class CNNLSTM(BaseDecoder):
         # Output projection (bidir doubles hidden size)
         self.output_proj = nn.Linear(lstm_hidden * 2, n_classes)
 
+    @property
+    def downsample_factor(self) -> int:
+        return 4 if self._use_downsample else 1
+
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """Forward pass: [B, T, C] -> [B, T, n_classes]."""
+        """Forward pass: [B, T, C] -> [B, T', n_classes]."""
         # CNN expects [B, C, T]
         x = x.transpose(1, 2)          # [B, C, T]
-        x = self.cnn(x)                # [B, conv_channels, T]
-        x = x.transpose(1, 2)          # [B, T, conv_channels]
+        x = self.cnn(x)                # [B, conv_channels, T']
+        x = x.transpose(1, 2)          # [B, T', conv_channels]
 
-        x, _ = self.lstm(x)            # [B, T, lstm_hidden * 2]
-        logits = self.output_proj(x)   # [B, T, n_classes]
+        x, _ = self.lstm(x)            # [B, T', lstm_hidden * 2]
+        logits = self.output_proj(x)   # [B, T', n_classes]
         return logits
