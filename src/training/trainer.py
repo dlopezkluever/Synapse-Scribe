@@ -158,10 +158,13 @@ class Trainer:
             model.parameters(), lr=learning_rate, weight_decay=weight_decay
         )
 
-        # Scheduler
+        # Scheduler (cosine warmup per-step + plateau per-epoch)
         total_steps = max_epochs * len(train_loader)
         self.scheduler = cosine_warmup_scheduler(
             self.optimizer, warmup_steps=warmup_steps, total_steps=total_steps
+        )
+        self.plateau_scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+            self.optimizer, mode="min", factor=0.5, patience=5, min_lr=1e-6
         )
 
         # Mixed precision
@@ -224,14 +227,14 @@ class Trainer:
                 nn.utils.clip_grad_norm_(self.model.parameters(), self.grad_clip_max_norm)
                 self.scaler.step(self.optimizer)
                 self.scaler.update()
+                self.scheduler.step()
             else:
                 logits = self.model(features)
                 loss = self.criterion(logits, targets, input_lengths, target_lengths)
                 loss.backward()
                 nn.utils.clip_grad_norm_(self.model.parameters(), self.grad_clip_max_norm)
                 self.optimizer.step()
-
-            self.scheduler.step()
+                self.scheduler.step()
             self.global_step += 1
 
             total_loss += loss.item()
@@ -315,6 +318,9 @@ class Trainer:
 
             # Validate
             val_loss, val_cer, val_wer, preds, refs = self.validate()
+
+            # Step plateau scheduler based on validation CER
+            self.plateau_scheduler.step(val_cer)
 
             # Record
             lr = self.optimizer.param_groups[0]["lr"]
