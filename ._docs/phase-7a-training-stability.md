@@ -80,3 +80,18 @@ After these changes:
 - Run `pytest tests/` — all existing tests should pass (these are behavior-compatible changes)
 - The scheduler warning should disappear in the next training run
 - The plateau scheduler should prevent the collapse pattern seen in CNN-LSTM
+
+
+SUMAMRY:
+
+
+  Task 1 — Fix LR scheduler ordering (src/training/trainer.py): Moved self.scheduler.step() inside both AMP and non-AMP branches,        
+  directly after the optimizer step, so the ordering is explicit in each code path.
+
+  Task 2 — Add ReduceLROnPlateau (src/training/trainer.py): Added self.plateau_scheduler in __init__ (monitors val_cer, factor=0.5,      
+  patience=5, min_lr=1e-6). It steps per-epoch in train() after validation, alongside the per-step cosine scheduler.
+
+  Task 3 — Boost augmentation defaults (src/config.py): aug_gaussian_noise_std 0.01 → 0.1, aug_channel_dropout_rate 0.1 → 0.2.
+
+  Task 4 — Update Colab notebook (notebooks/07_colab_training.ipynb): GRU and CNN-LSTM LR lowered to 1e-4, added warmup guidance comment 
+  for Transformer, reordered MODELS_TO_TRAIN with cnn_transformer first.
