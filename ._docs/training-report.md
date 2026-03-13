@@ -282,3 +282,209 @@ We successfully built and ran the full training pipeline on real Willett BCI dat
 However, CPU training imposed severe constraints that prevented reaching publication-quality results. The model was limited to 846K parameters (vs 4.4M designed), 2000-timestep sequences (vs 5000+ needed), and 31 epochs (vs 200 intended). The resulting overfitting and CER plateau at 0.985 are direct consequences of these constraints.
 
 The pipeline is validated and ready. GPU training with the full-size model is the clear next step to achieve the <10% CER results demonstrated in the Willett paper.
+
+---
+---
+
+# GPU Training Report: All Four Architectures
+**Date:** March 13, 2026
+**Hardware:** NVIDIA T4 GPU (Google Colab)
+**Dataset:** Willett Handwriting BCI (3,691–3,868 trials after length filtering)
+**New Feature:** Temporal downsampling (4x for GRU/CNN-LSTM/Transformer, 8x for CNN-Transformer)
+
+---
+
+## 11. Overview
+
+Following the CPU baseline (Section 10), we trained all four model architectures on GPU with full-size configurations, z-score normalization, and the newly implemented temporal downsampling (Phase 7C). Temporal downsampling reduces CTC's blank ratio by compressing the time axis before decoding — 4x via strided Conv1d layers for GRU/CNN-LSTM/Transformer, and 8x via the CNN-Transformer's integrated MaxPool front-end.
+
+### Results Summary
+
+| Model | Params | Epochs (Early Stop) | Time | Best Val CER | Best Val WER | Status |
+|-------|--------|---------------------|------|-------------|-------------|--------|
+| CNN-LSTM | 10.7M | 173 (stop @ 153) | 111 min | **0.0424 (4.2%)** | ~0.14 | Excellent |
+| CNN-Transformer | 13.3M | 89 (stop @ 69) | 37.7 min | 0.3516 (35.2%) | ~0.53 | Moderate |
+| GRU Decoder | 4.9M | 28 (stop @ 8) | 14.2 min | 0.9817 (98.2%) | ~0.98 | Failed |
+| Transformer | 20.7M | 21 (stop @ 1) | 12.3 min | 1.0000 (100%) | 1.00 | Failed |
+
+**Total GPU time:** ~175 minutes (~2.9 hours).
+
+---
+
+## 12. CNN-LSTM: The Winner (4.2% CER)
+
+### 12.1 Configuration
+- **Model:** CNNLSTM (10.7M params) — 3-layer CNN (conv_channels=256, kernel=7, stride-2 on first 2 layers for 4x downsample) → 2-layer LSTM (hidden=512)
+- **Data:** 3,868 trials (filtered to ≤5000 timesteps), z-score normalized
+- **Training:** batch_size=12, lr=1e-4, dropout=0.5, mixed precision (fp16)
+- **Split:** 3,094 train / 386 val / 388 test
+
+### 12.2 Training Phases
+
+The CNN-LSTM went through five distinct learning phases:
+
+**Phase 1: All Blank (Epochs 1–6)**
+CER ~99%. The model output empty strings. Standard CTC initialization behavior — predicting blank at every frame minimizes initial loss. Mode collapse to single characters ('u', 'n', 'f', 'w') emerged briefly.
+
+**Phase 2: Single-Character Differentiation (Epochs 7–34)**
+CER dropped slowly from 98% to 89%. The model learned to predict correct single-letter trials ('r'='r', 'k'='k') but still output single characters for sentences. First correct letter predictions at epoch 11 (CER 97.3%).
+
+**Phase 3: Sentence Breakthrough (Epochs 35–55)**
+The critical inflection point. At epoch 35, CER plummeted from 89% to 72% as the model began outputting multi-character sequences for sentences:
+- Epoch 35: `'ta aes e fefsa'` for `'daisy leaned forward at once horrified and fascina'` — first sentence-like output
+- Epoch 38: `'tary hansdswosaf nes moinsid ane fafrmd eo'` — word-level structure emerging
+- Epoch 50: `'caisy hecned foonccrndi at once houmrifiicd anc'` — 22.4% CER
+- Epoch 55: `'daisy learad foorwand at once hourrifisd and fasci'` — 16.5% CER
+
+**Phase 4: Rapid Refinement (Epochs 55–107)**
+CER dropped from 16.5% to ~5%. Character-level accuracy improved dramatically:
+- Epoch 73: `'daisy leaned forward at once hourrifisd and fascin'` — 8.5% CER
+- Epoch 94: `'daisy heaned forwardx at once horrified and fascin'` — 6.4% CER
+- Epoch 107: `'daisy leaned forward at once horrified and fascina'` — exact match on sample sentence, 5.5% CER overall
+
+**Phase 5: Fine-Tuning Plateau (Epochs 107–173)**
+CER oscillated between 4.2%–5.3%. Remaining errors were minor: character doublings (`'forwarrd'`), substitutions (`'ard'` for `'and'`), and occasional truncations. Best checkpoint saved at epoch 153 with CER=0.0424.
+
+### 12.3 Key Epoch Milestones
+
+| Epoch | Train Loss | Val Loss | Val CER | Prediction Sample |
+|-------|-----------|----------|---------|-------------------|
+| 1 | 50.47 | 4.33 | 1.000 | `''` (blank) |
+| 11 | 2.57 | 2.88 | 0.973 | `'r'` (single char) |
+| 22 | 1.58 | 2.58 | 0.948 | `'t'` / `'r'` / `'k'` (correct letters) |
+| 35 | 0.77 | 1.61 | 0.725 | `'ta aes e fefsa'` (first sentence fragments) |
+| 50 | 0.27 | 0.76 | 0.224 | `'caisy hecned foonccrndi at once houmrifiicd anc'` |
+| 73 | 0.09 | 0.56 | 0.085 | `'daisy leaned forward at once hourrifisd and fascin'` |
+| 107 | 0.03 | 0.47 | 0.055 | `'daisy leaned forward at once horrified and fascina'` |
+| 153 | 0.03 | 0.52 | **0.042** | `'daisy leaned forward at once horrified and fascina'` |
+
+### 12.4 Why CNN-LSTM Worked
+
+1. **CNN front-end provides local temporal features.** The strided convolutions extract local spike patterns before the LSTM sees them, acting as a learned feature extractor that reduces noise and highlights task-relevant neural dynamics.
+2. **4x temporal downsampling is the sweet spot.** Reducing 5000 timesteps to 1250 frames gives CTC a manageable blank ratio while preserving enough temporal resolution for character-level alignment.
+3. **High dropout (0.5) prevented overfitting.** Despite 10.7M parameters on only ~3,000 training trials, the model generalized well — val loss stabilized around 0.47 while train loss hit 0.01.
+4. **LSTM captures long-range dependencies.** Unlike the pure CNN approach, the LSTM can model sequential dependencies across the sentence, critical for character ordering.
+
+---
+
+## 13. CNN-Transformer: Promising but Plateaued (35.2% CER)
+
+### 13.1 Configuration
+- **Model:** CNNTransformer (13.3M params) — 3-layer CNN with MaxPool(2) each (8x downsample) → 4-layer Transformer encoder (d_model=512, 8 heads)
+- **Data:** 3,691 trials (filtered to ≤4096 timesteps), z-score normalized
+- **Training:** batch_size=8, lr=1e-4, dropout=0.1, mixed precision
+
+### 13.2 Training Progression
+
+The CNN-Transformer showed steady improvement but stalled around epoch 69:
+- **Epochs 1–8:** All blank output (CER=100%)
+- **Epoch 10:** First character predictions (CER=88.5%)
+- **Epoch 28–32:** Rapid drop from 77% to 60% CER as single-letter trials decoded correctly
+- **Epoch 48:** CER=42.2%, single letters mostly correct
+- **Epoch 69:** Best CER=35.2%, then plateaued and early-stopped at epoch 89
+
+### 13.3 Issues
+
+1. **8x downsampling is too aggressive.** Compressing 4096 timesteps to 512 frames loses fine-grained temporal detail needed for CTC alignment on long sentences. The CNN-LSTM's 4x downsampling preserves twice the temporal resolution.
+2. **Overfitting with val loss oscillation.** Val loss bounced between 0.9–2.1 while train loss was ~0.05, indicating poor generalization. The model memorized training patterns but couldn't transfer to validation.
+3. **CTC repetition collapse.** At epoch 52, the model briefly produced outputs like `'rxxxxxxxxxx'` (CER spiked to 97.7%), a classic CTC failure mode where the model gets stuck repeating a character. It recovered, but this suggests instability near the decision boundary.
+4. **Low dropout (0.1) was insufficient** for the data size. The CNN-LSTM used 0.5 dropout, which may explain its better generalization.
+
+---
+
+## 14. GRU Decoder: Failed (98.2% CER)
+
+### 14.1 Configuration
+- **Model:** GRUDecoder (4.9M params) — Conv1d downsampler (4x) → 3-layer GRU (hidden=512)
+- **Data:** 3,868 trials (filtered to ≤5000 timesteps), z-score normalized
+- **Training:** batch_size=16, lr=1e-4, dropout=0.3, mixed precision
+
+### 14.2 What Happened
+
+The GRU never broke out of the single-character prediction phase across 28 epochs. While CER briefly improved from 100% to 98.2% (epoch 8), it never produced multi-character outputs for sentences. Train loss dropped steadily (70.99 → 2.26) but val loss diverged (4.22 → 4.84), indicating severe overfitting to trivial patterns.
+
+### 14.3 Why It Failed
+
+1. **Pure recurrent over long sequences.** Even with 4x downsampling, the GRU processes 1250-frame sequences without any local feature extraction. The Conv1d downsampler is too thin (2 layers) to substitute for a proper CNN front-end.
+2. **Insufficient capacity for the task.** At 4.9M params, the GRU is the smallest model tested. The successful CNN-LSTM has 10.7M params with a more structured architecture.
+3. **No local feature extraction.** The GRU sees raw (downsampled) neural channels and must learn both local spike patterns and sequential dependencies simultaneously — too much for a single recurrent module.
+
+---
+
+## 15. Transformer Decoder: Failed (100% CER)
+
+### 15.1 Configuration
+- **Model:** TransformerDecoder (20.7M params) — Conv1d downsampler (4x) → 6-layer Transformer encoder (d_model=512, 8 heads)
+- **Data:** 3,691 trials (filtered to ≤4096 timesteps), z-score normalized
+- **Training:** batch_size=8, lr=1e-4, dropout=0.1, mixed precision
+
+### 15.2 What Happened
+
+The Transformer never produced a single character in 21 epochs. CER remained at exactly 100% throughout. Train loss dropped (11.25 → 1.34) but this was entirely from the model learning to optimize blank token probabilities without ever emitting characters.
+
+### 15.3 Why It Failed
+
+1. **Self-attention on raw neural signals doesn't work at this scale.** With only ~3,000 training samples, 6 layers of full self-attention over 1024 frames (after 4x downsample) can't discover meaningful patterns. The model has no inductive bias for local temporal structure.
+2. **Too many parameters, too little data.** 20.7M parameters on 2,952 training samples is a 7000:1 parameter-to-sample ratio — massively overparameterized with no mechanism to constrain learning.
+3. **Needs a CNN embedding layer.** The successful CNN-Transformer (35.2% CER) works precisely because its CNN front-end provides structured local features. Raw attention over neural time series requires far more data or explicit local structure.
+
+---
+
+## 16. Architecture Comparison
+
+| | CNN-LSTM | CNN-Transformer | GRU | Transformer |
+|---|---------|----------------|-----|-------------|
+| **Local features** | 3-layer CNN | 3-layer CNN+MaxPool | 2-layer Conv1d | 2-layer Conv1d |
+| **Sequence model** | 2-layer LSTM | 4-layer Transformer | 3-layer GRU | 6-layer Transformer |
+| **Downsample** | 4x (stride) | 8x (MaxPool) | 4x (stride) | 4x (stride) |
+| **Dropout** | 0.5 | 0.1 | 0.3 | 0.1 |
+| **Best CER** | **4.2%** | 35.2% | 98.2% | 100% |
+| **Converged?** | Yes | Partial | No | No |
+
+**Key insight:** The presence of a strong CNN front-end is the primary differentiator. Both models with substantial CNN layers (CNN-LSTM, CNN-Transformer) achieved meaningful CER reductions. The 4x vs 8x downsampling difference accounts for the gap between CNN-LSTM and CNN-Transformer.
+
+---
+
+## 17. Known Issues from This Session
+
+1. **LR scheduler ordering bug.** All four models logged a PyTorch warning: `lr_scheduler.step()` was called before `optimizer.step()`, causing the first LR value to be skipped. Should swap the call order in `src/training/trainer.py:237`.
+2. **CNN-Transformer 8x downsampling bottleneck.** The 8x reduction likely hurts CTC alignment. Running with `--no-downsample` or reducing to 4x could significantly improve results.
+3. **GRU and Transformer need architectural changes.** The thin Conv1d downsampler is insufficient — these models need either a proper CNN front-end or significantly more training data to work.
+
+---
+
+## 18. Comparison: CPU vs GPU Training
+
+| Metric | CPU (March 11) | GPU (March 13) |
+|--------|---------------|----------------|
+| **Hardware** | CPU only | T4 GPU (Colab) |
+| **Best model** | GRU (846K params) | CNN-LSTM (10.7M params) |
+| **Best CER** | 0.985 (98.5%) | **0.0424 (4.2%)** |
+| **Epoch time** | 4–11 min | 25–40 sec |
+| **Total time** | 3.5 hours (1 model) | 2.9 hours (4 models) |
+| **Epochs trained** | 31 | 173 (best model) |
+| **Improvement** | — | **23x better CER** |
+
+GPU training delivered a 23x improvement in CER while training four models in less total time than the single CPU run.
+
+---
+
+## 19. Next Steps
+
+1. **Run beam search + LM on CNN-LSTM checkpoint.** The LM rescoring pipeline is already built. Even a simple character n-gram model could push CER below 3%.
+2. **Reduce CNN-Transformer downsampling to 4x.** Test whether matching the CNN-LSTM's temporal resolution closes the gap.
+3. **Fix LR scheduler call order** in trainer.py (swap lines 237/243).
+4. **Test set evaluation.** Run the CNN-LSTM best checkpoint on the held-out test set for final numbers.
+
+---
+
+## 20. Saved Artifacts
+
+| Artifact | Path | Description |
+|----------|------|-------------|
+| CNN-LSTM best | `outputs/checkpoints/GPU-3-13/CNNLSTM_best.pt` | Epoch 153, CER=0.0424 |
+| CNN-Transformer best | `outputs/checkpoints/GPU-3-13/CNNTransformer_best.pt` | Epoch 69, CER=0.3516 |
+| GRU best | `outputs/checkpoints/GPU-3-13/GRUDecoder_best.pt` | Epoch 8, CER=0.9817 |
+| Transformer best | `outputs/checkpoints/GPU-3-13/TransformerDecoder_best.pt` | Epoch 1, CER=1.0000 |
+| Raw training logs | `._docs/GPU-Training-Summary-313.md` | Full epoch-by-epoch output |
+| W&B dashboard | `wandb.ai/dlopezkluever-aiuteur/brain-text-decoder` | Interactive metrics |
