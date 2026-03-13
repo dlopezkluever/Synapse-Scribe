@@ -59,6 +59,55 @@ Notebook created. Now here's your step-by-step walkthrough:
 
   You should see "T4" in the top-right of the Colab interface confirming GPU is active.     
 
+----
+**Update:**
+
+ou need to upload the notebook file too, yes. Add a notebooks/ folder to your Drive   
+  with just 07_colab_training.ipynb in it:
+
+  My Drive/
+    BCI-2/
+      src/
+      scripts/
+      notebooks/
+        07_colab_training.ipynb     ← add this
+      requirements.txt
+      bci_training_data.zip
+
+  You can either upload the whole notebooks/ folder, or just create a notebooks folder in   Drive and drop the one file in. The other notebooks (01-06) won't hurt but aren't     
+  needed.
+
+  ---
+  Now here's the detailed walkthrough of Step 3:
+
+  1. Open your browser and go to colab.research.google.com. You'll land on a welcome page   with a popup dialog.
+
+  2. That popup dialog has tabs across the top: Examples | Recent | Google Drive | GitHub   | Upload. Click the Google Drive tab.
+
+  3. You'll see your Drive files. Navigate into BCI-2 > notebooks > click on
+  07_colab_training.ipynb. It will open in Colab as an interactive notebook.
+
+  If the popup didn't appear: Click File (top-left menu bar) > Open notebook to get it.  
+
+  4. Now you need to enable GPU. Look at the top menu bar and click Runtime > Change     
+  runtime type. A dialog appears with a dropdown for "Hardware accelerator":
+  - Change it from None (or CPU) to T4 GPU
+  - Click Save
+
+  5. To confirm GPU is active, look at the top-right corner of the Colab interface. You  
+  should see a small label that says T4 next to the RAM/Disk indicators. If it says      
+  "None" or you don't see it, repeat step 4.
+
+  6. Now click Connect (top-right button) if it hasn't auto-connected. It will spin for a   few seconds and then show a green checkmark with RAM/Disk usage bars. You're now      
+  connected to a GPU machine.
+
+  7. Start running cells top-to-bottom using Shift+Enter on each cell (or the play button   on the left of each cell).
+
+  That's it — you're in. Does the Drive tab show your BCI-2 folder when you get to step  
+  2?
+
+
+
   ---
   Step 4: Run the Notebook Cells in Order
 
