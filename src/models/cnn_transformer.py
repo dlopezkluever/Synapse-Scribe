@@ -132,6 +132,10 @@ class CNNTransformer(BaseDecoder):
         # Output projection
         self.output_proj = nn.Linear(d_model, n_classes)
 
+    @property
+    def downsample_factor(self) -> int:
+        return 8  # 3 MaxPool(2) layers
+
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """Forward pass.
 
