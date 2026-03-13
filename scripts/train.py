@@ -25,10 +25,14 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import numpy as np
+import pandas as pd
 import torch
 
 from src.config import load_config
-from src.data.dataset import create_dataloaders, ctc_collate_fn, NeuralTrialDataset, split_trial_index
+from src.data.dataset import (
+    create_dataloaders, create_dataloaders_from_splits, ctc_collate_fn,
+    NeuralTrialDataset, split_trial_index, split_trial_index_by_session,
+)
 from src.data.transforms import get_training_transforms
 from src.models.gru_decoder import GRUDecoder
 from src.models.cnn_lstm import CNNLSTM
@@ -80,6 +84,25 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--normalize", action="store_true",
         help="Z-score normalize per channel (recommended for raw spike count data)",
+    )
+    # Firing rate features (Pathway C)
+    parser.add_argument(
+        "--use-firing-rates", action="store_true",
+        help="Apply firing rate binning + sqrt transform (Pathway C)",
+    )
+    parser.add_argument(
+        "--bin-width-ms", type=float, default=10.0,
+        help="Bin width in ms for firing rate computation (default: 10.0)",
+    )
+    # Session-aware splitting
+    parser.add_argument(
+        "--session-split", action="store_true",
+        help="Split by recording session (no session spans train/val/test)",
+    )
+    # Sentence oversampling
+    parser.add_argument(
+        "--oversample-sentences", type=float, default=1.0,
+        help="Oversample sentence trials by this factor (e.g. 3.0 = 3x copies in train set)",
     )
     # Model hyperparameters (override defaults for faster training)
     parser.add_argument("--hidden-size", type=int, default=None,
@@ -177,13 +200,38 @@ def main() -> None:
         fs=cfg.target_fs,
     )
 
-    train_loader, val_loader, test_loader = create_dataloaders(
-        trial_index,
+    # Split explicitly so we can apply per-split modifications
+    if args.session_split:
+        train_df, val_df, test_df = split_trial_index_by_session(
+            trial_index, cfg.split_ratios, seed=42,
+        )
+    else:
+        train_df, val_df, test_df = split_trial_index(
+            trial_index, cfg.split_ratios, seed=42,
+        )
+
+    # Oversample sentence trials in train set only
+    if args.oversample_sentences > 1.0:
+        sentence_mask = train_df["n_timesteps"] > 300
+        sentence_df = train_df[sentence_mask]
+        n_copies = int(args.oversample_sentences) - 1
+        if n_copies > 0 and len(sentence_df) > 0:
+            train_df = pd.concat(
+                [train_df] + [sentence_df] * n_copies, ignore_index=True,
+            )
+            logger.info(
+                "Oversampled %d sentence trials x%d → train set now %d trials",
+                len(sentence_df), n_copies + 1, len(train_df),
+            )
+
+    train_loader, val_loader, test_loader = create_dataloaders_from_splits(
+        train_df, val_df, test_df,
         t_max=args.t_max,
         batch_size=args.batch_size,
-        split_ratios=cfg.split_ratios,
         train_transform=train_transform,
         normalize=args.normalize,
+        use_firing_rates=args.use_firing_rates,
+        bin_width_ms=args.bin_width_ms,
     )
 
     # Create model (CLI args override defaults for faster training)
