@@ -26,17 +26,35 @@ def small_input():
 
 class TestGRUDecoder:
     def test_output_shape(self, dummy_input):
-        model = GRUDecoder(n_channels=192, n_classes=28)
+        model = GRUDecoder(n_channels=192, n_classes=28, use_downsample=False)
         logits = model(dummy_input)
         assert logits.shape == (4, 2000, 28)
 
+    def test_output_shape_downsampled(self, dummy_input):
+        model = GRUDecoder(n_channels=192, n_classes=28, use_downsample=True)
+        logits = model(dummy_input)
+        assert logits.shape == (4, 500, 28)
+
     def test_output_shape_small(self, small_input):
-        model = GRUDecoder(n_channels=32, n_classes=28)
+        model = GRUDecoder(n_channels=32, n_classes=28, use_downsample=False)
         logits = model(small_input)
         assert logits.shape == (2, 100, 28)
 
+    def test_downsample_factor(self):
+        assert GRUDecoder(use_downsample=True).downsample_factor == 4
+        assert GRUDecoder(use_downsample=False).downsample_factor == 1
+
     def test_gradient_flow(self, small_input):
-        model = GRUDecoder(n_channels=32, n_classes=28)
+        model = GRUDecoder(n_channels=32, n_classes=28, use_downsample=False)
+        logits = model(small_input)
+        loss = logits.sum()
+        loss.backward()
+        for name, param in model.named_parameters():
+            if param.requires_grad:
+                assert param.grad is not None, f"No gradient for {name}"
+
+    def test_gradient_flow_downsampled(self, small_input):
+        model = GRUDecoder(n_channels=32, n_classes=28, use_downsample=True)
         logits = model(small_input)
         loss = logits.sum()
         loss.backward()
@@ -59,17 +77,38 @@ class TestGRUDecoder:
 
 class TestCNNLSTM:
     def test_output_shape(self, dummy_input):
-        model = CNNLSTM(n_channels=192, n_classes=28)
+        model = CNNLSTM(n_channels=192, n_classes=28, use_downsample=False)
         logits = model(dummy_input)
         assert logits.shape == (4, 2000, 28)
 
+    def test_output_shape_downsampled(self, dummy_input):
+        model = CNNLSTM(n_channels=192, n_classes=28, use_downsample=True)
+        logits = model(dummy_input)
+        assert logits.shape == (4, 500, 28)
+
     def test_output_shape_small(self, small_input):
-        model = CNNLSTM(n_channels=32, n_classes=28, conv_channels=64, lstm_hidden=64)
+        model = CNNLSTM(n_channels=32, n_classes=28, conv_channels=64,
+                         lstm_hidden=64, use_downsample=False)
         logits = model(small_input)
         assert logits.shape == (2, 100, 28)
 
+    def test_downsample_factor(self):
+        assert CNNLSTM(use_downsample=True).downsample_factor == 4
+        assert CNNLSTM(use_downsample=False).downsample_factor == 1
+
     def test_gradient_flow(self, small_input):
-        model = CNNLSTM(n_channels=32, n_classes=28, conv_channels=64, lstm_hidden=64)
+        model = CNNLSTM(n_channels=32, n_classes=28, conv_channels=64,
+                         lstm_hidden=64, use_downsample=False)
+        logits = model(small_input)
+        loss = logits.sum()
+        loss.backward()
+        for name, param in model.named_parameters():
+            if param.requires_grad:
+                assert param.grad is not None, f"No gradient for {name}"
+
+    def test_gradient_flow_downsampled(self, small_input):
+        model = CNNLSTM(n_channels=32, n_classes=28, conv_channels=64,
+                         lstm_hidden=64, use_downsample=True)
         logits = model(small_input)
         loss = logits.sum()
         loss.backward()
@@ -92,23 +131,54 @@ class TestCNNLSTM:
 
 class TestTransformerDecoder:
     def test_output_shape(self):
-        model = TransformerDecoder(n_channels=192, n_classes=28)
+        model = TransformerDecoder(n_channels=192, n_classes=28, use_downsample=False)
         x = torch.randn(2, 200, 192)
         logits = model(x)
         assert logits.shape == (2, 200, 28)
+
+    def test_output_shape_downsampled(self):
+        model = TransformerDecoder(n_channels=192, n_classes=28, use_downsample=True)
+        x = torch.randn(2, 200, 192)
+        logits = model(x)
+        assert logits.shape == (2, 50, 28)
 
     def test_output_shape_small(self, small_input):
         model = TransformerDecoder(
             n_channels=32, n_classes=28,
             d_model=64, n_heads=4, n_layers=2, ffn_dim=128,
+            use_downsample=False,
         )
         logits = model(small_input)
         assert logits.shape == (2, 100, 28)
+
+    def test_downsample_factor(self):
+        assert TransformerDecoder(
+            d_model=64, n_heads=4, n_layers=2, ffn_dim=128,
+            use_downsample=True,
+        ).downsample_factor == 4
+        assert TransformerDecoder(
+            d_model=64, n_heads=4, n_layers=2, ffn_dim=128,
+            use_downsample=False,
+        ).downsample_factor == 1
 
     def test_gradient_flow(self, small_input):
         model = TransformerDecoder(
             n_channels=32, n_classes=28,
             d_model=64, n_heads=4, n_layers=2, ffn_dim=128,
+            use_downsample=False,
+        )
+        logits = model(small_input)
+        loss = logits.sum()
+        loss.backward()
+        for name, param in model.named_parameters():
+            if param.requires_grad:
+                assert param.grad is not None, f"No gradient for {name}"
+
+    def test_gradient_flow_downsampled(self, small_input):
+        model = TransformerDecoder(
+            n_channels=32, n_classes=28,
+            d_model=64, n_heads=4, n_layers=2, ffn_dim=128,
+            use_downsample=True,
         )
         logits = model(small_input)
         loss = logits.sum()
@@ -133,6 +203,7 @@ class TestTransformerDecoder:
         model = TransformerDecoder(
             n_channels=32, n_classes=28,
             d_model=64, n_heads=4, n_layers=2, ffn_dim=128,
+            use_downsample=False,
         )
         # Mask: True means padded (ignored)
         mask = torch.zeros(2, 100, dtype=torch.bool)
@@ -142,14 +213,26 @@ class TestTransformerDecoder:
         assert logits.shape == (2, 100, 28)
 
     def test_preserves_time_dimension(self):
-        """Transformer should not change the time dimension."""
+        """Without downsampling, Transformer should not change the time dimension."""
         model = TransformerDecoder(
             n_channels=32, d_model=64, n_heads=4, n_layers=2, ffn_dim=128,
+            use_downsample=False,
         )
         for T in [50, 100, 200]:
             x = torch.randn(1, T, 32)
             out = model(x)
             assert out.shape[1] == T
+
+    def test_4x_reduction_with_downsample(self):
+        """With downsampling, Transformer should reduce time by 4x."""
+        model = TransformerDecoder(
+            n_channels=32, d_model=64, n_heads=4, n_layers=2, ffn_dim=128,
+            use_downsample=True,
+        )
+        for T in [80, 160, 200]:
+            x = torch.randn(1, T, 32)
+            out = model(x)
+            assert out.shape[1] == T // 4
 
 
 # --- Hybrid CNN-Transformer (Model D) ---
@@ -183,6 +266,13 @@ class TestCNNTransformer:
             x = torch.randn(1, T, 32)
             out = model(x)
             assert out.shape[1] == T // 8
+
+    def test_downsample_factor(self):
+        model = CNNTransformer(
+            n_channels=32, cnn_channels=64, d_model=64, n_heads=4,
+            n_transformer_layers=2, ffn_dim=128,
+        )
+        assert model.downsample_factor == 8
 
     def test_gradient_flow(self, small_input):
         model = CNNTransformer(

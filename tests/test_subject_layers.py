@@ -32,7 +32,7 @@ from src.training.multi_subject import (
 
 @pytest.fixture
 def tiny_model():
-    return GRUDecoder(n_channels=4, n_classes=28, proj_dim=8, hidden_size=16, n_layers=1, dropout=0.0)
+    return GRUDecoder(n_channels=4, n_classes=28, proj_dim=8, hidden_size=16, n_layers=1, dropout=0.0, use_downsample=False)
 
 
 @pytest.fixture
