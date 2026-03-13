@@ -171,6 +171,9 @@ class Trainer:
         self.use_amp = mixed_precision and self.device.type == "cuda"
         self.scaler = torch.amp.GradScaler("cuda") if self.use_amp else None
 
+        # Temporal downsampling
+        self.downsample_factor = getattr(model, "downsample_factor", 1)
+
         # Tracking
         self.history = TrainHistory()
         self.best_val_cer = float("inf")
@@ -216,6 +219,10 @@ class Trainer:
             input_lengths = batch["input_lengths"].to(self.device)
             target_lengths = batch["target_lengths"].to(self.device)
 
+            # Adjust for model's temporal downsampling
+            if self.downsample_factor > 1:
+                input_lengths = input_lengths // self.downsample_factor
+
             self.optimizer.zero_grad()
 
             if self.use_amp:
@@ -258,6 +265,10 @@ class Trainer:
             input_lengths = batch["input_lengths"].to(self.device)
             target_lengths = batch["target_lengths"].to(self.device)
             label_texts = batch["label_texts"]
+
+            # Adjust for model's temporal downsampling
+            if self.downsample_factor > 1:
+                input_lengths = input_lengths // self.downsample_factor
 
             logits = self.model(features)
             loss = self.criterion(logits, targets, input_lengths, target_lengths)
@@ -309,6 +320,7 @@ class Trainer:
             model_name, self.device, self.max_epochs, self.use_amp,
         )
         logger.info("Parameters: %d", sum(p.numel() for p in self.model.parameters()))
+        logger.info("Temporal downsample factor: %d", self.downsample_factor)
 
         for epoch in range(1, self.max_epochs + 1):
             t0 = time.time()
