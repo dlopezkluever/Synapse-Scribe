@@ -38,6 +38,7 @@ class Config:
     bad_channel_var_threshold: float = 10.0
 
     # --- firing rate binning (Pathway C, Willett) ---
+    use_firing_rates: bool = False
     bin_width_ms: float = 10.0
 
     # --- model ---
@@ -78,8 +79,8 @@ class Config:
     # --- augmentation ---
     aug_time_mask_n: int = 3
     aug_time_mask_max_ms: float = 50.0
-    aug_channel_dropout_rate: float = 0.1
-    aug_gaussian_noise_std: float = 0.01
+    aug_channel_dropout_rate: float = 0.2
+    aug_gaussian_noise_std: float = 0.1
 
     # --- W&B experiment tracking ---
     wandb_enabled: bool = False
