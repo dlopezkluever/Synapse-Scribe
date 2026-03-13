@@ -122,3 +122,28 @@ The `--trial-type` flag already exists and can filter to "letters" or "sentences
 - Run `pytest tests/` — existing tests should pass since all changes are additive (new flags default to off)
 - Manually verify: run `python scripts/train.py --model gru_decoder --epochs 1 --use-firing-rates --normalize` and confirm it loads, bins features, and runs one epoch without errors
 - Check that firing rate binning reduces the signal lengths in the logs (e.g., 201 → 80 for letters at 10ms bins with 250Hz)
+
+
+  Here's a summary of what was implemented across the three tasks:
+
+  Task 1: Firing Rate Features
+
+  - src/config.py: Added use_firing_rates: bool = False field
+  - src/data/dataset.py:
+    - NeuralTrialDataset now accepts use_firing_rates and bin_width_ms params
+    - __getitem__ applies compute_firing_rate_features() before normalization
+    - actual_length computed after binning (not before)
+    - _compute_channel_stats also applies binning so stats match
+    - create_dataloaders passes through both params
+  - scripts/train.py: Added --use-firing-rates and --bin-width-ms CLI flags
+
+  Task 2: Session-Aware Split
+
+  - src/data/dataset.py: Added split_trial_index_by_session() — shuffles sessions, allocates whole sessions to splits by cumulative trial   count, logs which sessions go where
+  - src/data/dataset.py: Added create_dataloaders_from_splits() — takes pre-split DataFrames instead of doing internal splitting
+  - scripts/train.py: Added --session-split flag; split is now done explicitly before dataloader creation
+
+  Task 3: Trial Type Balancing
+
+  - scripts/train.py: Added --oversample-sentences flag (float, default 1.0); applies oversampling only to train DataFrame after
+  splitting, before dataloader creation
