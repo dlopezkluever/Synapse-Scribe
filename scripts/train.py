@@ -124,6 +124,9 @@ def parse_args() -> argparse.Namespace:
                         help="W&B run name (auto-generated if not set)")
     parser.add_argument("--wandb-tags", type=str, nargs="*", default=None,
                         help="W&B run tags (e.g. --wandb-tags baseline gru)")
+    # Temporal downsampling
+    parser.add_argument("--no-downsample", action="store_true",
+                        help="Disable temporal downsampling (for ablation comparisons)")
     return parser.parse_args()
 
 
@@ -237,6 +240,7 @@ def main() -> None:
     # Create model (CLI args override defaults for faster training)
     ModelClass = MODEL_REGISTRY[args.model]
     dropout = args.dropout if args.dropout is not None else 0.3
+    use_downsample = not args.no_downsample
 
     if args.model == "gru_decoder":
         model = ModelClass(
@@ -245,6 +249,7 @@ def main() -> None:
             hidden_size=args.hidden_size or 512,
             n_layers=args.n_layers or 3,
             dropout=dropout,
+            use_downsample=use_downsample,
         )
     elif args.model == "cnn_lstm":
         model = ModelClass(
@@ -256,6 +261,7 @@ def main() -> None:
             lstm_hidden=args.hidden_size or cfg.lstm_hidden,
             lstm_layers=args.n_layers or cfg.lstm_layers,
             dropout=args.dropout if args.dropout is not None else cfg.lstm_dropout,
+            use_downsample=use_downsample,
         )
     elif args.model == "transformer":
         model = ModelClass(
@@ -267,6 +273,7 @@ def main() -> None:
             ffn_dim=cfg.ffn_dim,
             dropout=args.dropout if args.dropout is not None else cfg.transformer_dropout,
             max_seq_len=cfg.max_seq_len,
+            use_downsample=use_downsample,
         )
     elif args.model == "cnn_transformer":
         model = ModelClass(
