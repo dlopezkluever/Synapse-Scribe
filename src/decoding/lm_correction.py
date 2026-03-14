@@ -1,12 +1,13 @@
 """Language model correction via shallow fusion.
 
-Supports KenLM character-level n-gram models and GPT-2 neural LM for
-re-scoring beam search hypotheses. Falls back gracefully when optional
-dependencies are not installed.
+Supports KenLM character-level n-gram models, a pure-Python character
+n-gram scorer, and GPT-2 neural LM for re-scoring beam search hypotheses.
+Falls back gracefully when optional dependencies are not installed.
 """
 
 from __future__ import annotations
 
+import json
 import logging
 import math
 from pathlib import Path
@@ -64,6 +65,69 @@ class DummyLMScorer:
 
     def score(self, text: str) -> float:
         return 0.0
+
+
+class CharNgramScorer:
+    """Pure-Python character n-gram LM scorer.
+
+    Loads a JSON model built by ``scripts/build_char_lm.py`` and scores
+    text using smoothed n-gram probabilities with backoff.
+
+    Args:
+        model_path: Path to the JSON language model file.
+    """
+
+    # BOS/EOS must match build_char_lm.py
+    BOS = "<s>"
+    EOS = "</s>"
+
+    def __init__(self, model_path: str | Path):
+        self.model_path = Path(model_path)
+        with open(self.model_path, "r", encoding="utf-8") as f:
+            lm = json.load(f)
+
+        self.order: int = lm["order"]
+        self.smoothing: float = lm["smoothing"]
+        self.vocab: list[str] = lm["vocab"]
+        self.vocab_size: int = len(self.vocab)
+        self.counts: dict[str, dict[str, int]] = lm["counts"]
+        self.totals: dict[str, int] = lm["totals"]
+        logger.info(
+            "Loaded CharNgramScorer: order=%d, vocab=%d, contexts=%d",
+            self.order, self.vocab_size, len(self.counts),
+        )
+
+    def _log_prob(self, char: str, context: tuple[str, ...]) -> float:
+        """Compute log P(char | context) with backoff."""
+        for n in range(len(context), -1, -1):
+            ctx = context[len(context) - n :]
+            ctx_key = "|".join(ctx)
+            if ctx_key in self.counts:
+                count = self.counts[ctx_key].get(char, 0)
+                total = self.totals[ctx_key]
+                # Lidstone smoothing
+                prob = (count + self.smoothing) / (
+                    total + self.smoothing * self.vocab_size
+                )
+                return math.log(prob)
+        # Uniform fallback
+        return math.log(1.0 / self.vocab_size)
+
+    def score(self, text: str) -> float:
+        """Score a text string. Returns log-probability (higher is better)."""
+        if not text:
+            return 0.0
+
+        text = text.lower()
+        padded = [self.BOS] * (self.order - 1) + list(text) + [self.EOS]
+
+        log_prob = 0.0
+        for i in range(self.order - 1, len(padded)):
+            context = tuple(padded[i - self.order + 1 : i])
+            char = padded[i]
+            log_prob += self._log_prob(char, context)
+
+        return log_prob
 
 
 class GPT2Scorer:
@@ -166,14 +230,14 @@ def load_lm_scorer(
     model_path: Optional[str | Path] = None,
     scorer_type: str = "kenlm",
     device: Optional[str] = None,
-) -> KenLMScorer | DummyLMScorer | GPT2Scorer:
+) -> KenLMScorer | DummyLMScorer | GPT2Scorer | CharNgramScorer:
     """Load a language model scorer, falling back to DummyLMScorer.
 
     Args:
-        model_path: Path to KenLM model, or HuggingFace model name for GPT-2.
-            If None, returns DummyLMScorer.
-        scorer_type: ``"kenlm"`` or ``"gpt2"``.
-        device: Device for GPT-2 (ignored for KenLM).
+        model_path: Path to KenLM model, char n-gram JSON, or HuggingFace
+            model name for GPT-2. If None, returns DummyLMScorer.
+        scorer_type: ``"kenlm"``, ``"char_ngram"``, or ``"gpt2"``.
+        device: Device for GPT-2 (ignored for other scorers).
 
     Returns:
         A scorer object with a ``.score(text)`` method.
@@ -184,6 +248,20 @@ def load_lm_scorer(
             return GPT2Scorer(model_name=model_name, device=device)
         except (ImportError, RuntimeError, OSError) as e:
             logger.warning("Could not load GPT-2: %s; using DummyLMScorer", e)
+            return DummyLMScorer()
+
+    if scorer_type == "char_ngram":
+        if model_path is None:
+            logger.warning("No LM path for char_ngram; using DummyLMScorer")
+            return DummyLMScorer()
+        model_path = Path(model_path)
+        if not model_path.exists():
+            logger.warning("Char n-gram LM not found at %s; using DummyLMScorer", model_path)
+            return DummyLMScorer()
+        try:
+            return CharNgramScorer(model_path)
+        except Exception as e:
+            logger.warning("Could not load char n-gram LM: %s; using DummyLMScorer", e)
             return DummyLMScorer()
 
     # Default: KenLM
