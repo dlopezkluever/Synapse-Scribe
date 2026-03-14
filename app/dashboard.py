@@ -34,7 +34,7 @@ if str(PROJECT_ROOT) not in sys.path:
 # ---------------------------------------------------------------------------
 
 API_BASE = "http://localhost:8000"
-MODEL_OPTIONS = ["gru_decoder", "cnn_lstm", "transformer", "cnn_transformer"]
+MODEL_OPTIONS = ["cnn_lstm", "gru_decoder", "transformer", "cnn_transformer"]
 MODEL_DISPLAY = {
     "gru_decoder": "GRU Decoder (Willett-style)",
     "cnn_lstm": "CNN + LSTM",
@@ -46,9 +46,12 @@ MODEL_DISPLAY = {
 # Page config
 # ---------------------------------------------------------------------------
 
+_icon_path = Path(__file__).resolve().parent.parent / "icon.ico"
+_page_icon = str(_icon_path) if _icon_path.exists() else "🧠"
+
 st.set_page_config(
-    page_title="Brain-Text Decoder",
-    page_icon="🧠",
+    page_title="Synapse Scribe",
+    page_icon=_page_icon,
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -143,8 +146,18 @@ def _local_decode(features: np.ndarray, model_type: str, beam_width: int, use_lm
 
     model = model_classes[model_type]()
 
-    # Try loading checkpoint
-    ckpt = Path(cfg.checkpoint_dir) / f"{model_type}_best.pt"
+    # Map model type keys to actual checkpoint filenames
+    _ckpt_names = {
+        "gru_decoder": "GRUDecoder_best.pt",
+        "cnn_lstm": "CNNLSTM_best.pt",
+        "transformer": "TransformerDecoder_best.pt",
+        "cnn_transformer": "CNNTransformer_best.pt",
+    }
+    ckpt_name = _ckpt_names.get(model_type, f"{model_type}_best.pt")
+    # Prefer GPU-trained checkpoints
+    gpu_ckpt = Path(cfg.checkpoint_dir) / "GPU-3-13" / ckpt_name
+    base_ckpt = Path(cfg.checkpoint_dir) / ckpt_name
+    ckpt = gpu_ckpt if gpu_ckpt.exists() else base_ckpt
     if ckpt.exists():
         state = torch.load(ckpt, map_location="cpu", weights_only=True)
         if "model_state_dict" in state:
@@ -206,7 +219,25 @@ def smart_decode_demo(model_type, beam_width, use_lm):
 
 
 def _generate_demo_signal(n_channels: int = 192, t_max: int = 2000) -> np.ndarray:
-    """Generate a synthetic demo signal."""
+    """Load a real demo signal, falling back to synthetic if unavailable."""
+    # Try loading real demo sample
+    demo_path = Path("data/demo_sample.npy")
+    if demo_path.exists():
+        sample = np.load(demo_path).astype(np.float32)
+        if sample.shape[0] > t_max:
+            sample = sample[:t_max]
+        return sample
+
+    # Try any real trial data
+    data_dir = Path("data")
+    npy_files = list(data_dir.rglob("trial_*_signals.npy"))
+    if npy_files:
+        sample = np.load(npy_files[0]).astype(np.float32)
+        if sample.shape[0] > t_max:
+            sample = sample[:t_max]
+        return sample
+
+    # Fallback: synthetic signal
     rng = np.random.RandomState(42)
     t = np.linspace(0, 2.0, t_max)
     sample = np.zeros((t_max, n_channels), dtype=np.float32)
@@ -223,7 +254,7 @@ def _generate_demo_signal(n_channels: int = 192, t_max: int = 2000) -> np.ndarra
 # Sidebar
 # ===================================================================
 
-st.sidebar.title("Brain-Text Decoder")
+st.sidebar.title("Synapse Scribe")
 st.sidebar.markdown("Neural signal decoding demo")
 
 # API status
@@ -844,10 +875,10 @@ def page_neural_representations():
         if features is not None:
             try:
                 import torch
-                from src.models.gru_decoder import GRUDecoder
+                from src.models.cnn_lstm import CNNLSTM
 
-                model = GRUDecoder()
-                ckpt = Path("outputs/checkpoints/gru_decoder_best.pt")
+                model = CNNLSTM()
+                ckpt = Path("outputs/checkpoints/GPU-3-13/CNNLSTM_best.pt")
                 if ckpt.exists():
                     state = torch.load(ckpt, map_location="cpu", weights_only=True)
                     key = "model_state_dict" if "model_state_dict" in state else None
@@ -864,9 +895,10 @@ def page_neural_representations():
                         out = out[0]
                     captured.append(out.detach().cpu().numpy())
 
-                # Hook into GRU
+                # Hook into LSTM
+                handle = None
                 for name, module in model.named_modules():
-                    if isinstance(module, torch.nn.GRU):
+                    if isinstance(module, torch.nn.LSTM):
                         handle = module.register_forward_hook(hook_fn)
                         break
 
@@ -930,11 +962,11 @@ def page_neural_representations():
                 with st.spinner("Computing gradient attribution..."):
                     try:
                         import torch
-                        from src.models.gru_decoder import GRUDecoder
+                        from src.models.cnn_lstm import CNNLSTM
                         from src.analysis.saliency import input_x_gradient, electrode_importance
 
-                        model = GRUDecoder()
-                        ckpt = Path("outputs/checkpoints/gru_decoder_best.pt")
+                        model = CNNLSTM()
+                        ckpt = Path("outputs/checkpoints/GPU-3-13/CNNLSTM_best.pt")
                         if ckpt.exists():
                             state = torch.load(ckpt, map_location="cpu", weights_only=True)
                             key = "model_state_dict" if "model_state_dict" in state else None
@@ -1048,12 +1080,12 @@ def page_neural_representations():
 
 
 def _generate_demo_embeddings():
-    """Generate and save demo embeddings using the GRU model on synthetic data."""
+    """Generate and save demo embeddings using the CNN-LSTM model on synthetic data."""
     import torch
-    from src.models.gru_decoder import GRUDecoder
+    from src.models.cnn_lstm import CNNLSTM
 
-    model = GRUDecoder()
-    ckpt = Path("outputs/checkpoints/gru_decoder_best.pt")
+    model = CNNLSTM()
+    ckpt = Path("outputs/checkpoints/GPU-3-13/CNNLSTM_best.pt")
     if ckpt.exists():
         state = torch.load(ckpt, map_location="cpu", weights_only=True)
         key = "model_state_dict" if "model_state_dict" in state else None
@@ -1076,15 +1108,17 @@ def _generate_demo_embeddings():
                 out = out[0]
             captured.append(out.detach().cpu().numpy())
 
+        handle = None
         for name, module in model.named_modules():
-            if isinstance(module, torch.nn.GRU):
+            if isinstance(module, torch.nn.LSTM):
                 handle = module.register_forward_hook(hook_fn)
                 break
 
         with torch.no_grad():
             _ = model(tensor)
 
-        handle.remove()
+        if handle:
+            handle.remove()
         if captured:
             emb = captured[0][0].mean(axis=0)  # mean pool over time
             embeddings.append(emb)
