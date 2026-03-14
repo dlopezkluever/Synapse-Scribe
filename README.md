@@ -1,4 +1,4 @@
-# Synapse-Scribe: Brain-Text Decoder
+# Synapse Scribe: Brain-Text Decoder
 
 Neural speech and handwriting BCI decoding system that converts brain recordings (ECoG/LFP) into text using CTC-trained sequence models.
 
