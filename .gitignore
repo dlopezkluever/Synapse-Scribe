@@ -1,6 +1,9 @@
 # Data
 data/
+!data/demo_sample.npy
+!data/demo_sample_label.txt
 outputs/
+!outputs/normalization_stats.npz
 
 # Python
 __pycache__/
