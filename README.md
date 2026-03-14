@@ -1,6 +1,14 @@
-# Synapse-Scribe: Brain-Text Decoder
+# Synapse Scribe: Brain-Text Decoder
 
 Neural speech and handwriting BCI decoding system that converts brain recordings (ECoG/LFP) into text using CTC-trained sequence models.
+
+<p align="center">
+  <img src="dash-images/001_STARTING_DECODING.PNG" alt="Upload & Decode — real-time brain-to-text decoding" width="100%"/>
+</p>
+
+<p align="center">
+  <em>Upload a neural recording, select a model, and decode brain activity into text — all from an interactive dashboard.</em>
+</p>
 
 ## Architecture
 
@@ -43,6 +51,43 @@ Neural Recording (ECoG / LFP)
 - **Interactive demo** -- Streamlit dashboard with 5 pages (Upload & Decode, Signal Viewer, Decoding Visualization, Benchmarks, Neural Representations)
 - **REST API** -- FastAPI backend with health, model info, decode, and demo endpoints
 - **Multi-dataset support** -- Willett Handwriting (primary), UCSF ECoG, OpenNeuro BIDS
+
+## Dashboard
+
+The interactive Streamlit dashboard provides five pages for exploring neural data, running decoding, and analyzing model behavior.
+
+<table>
+  <tr>
+    <td width="50%">
+      <img src="dash-images/008_SIGNAL_VIEW_1.PNG" alt="Signal Viewer"/>
+      <p align="center"><b>Signal Viewer</b> — browse raw neural time series across 192 electrode channels with interactive time range controls</p>
+    </td>
+    <td width="50%">
+      <img src="dash-images/004_CHARACTER_PREDICTIONS.PNG" alt="CTC Character Predictions"/>
+      <p align="center"><b>Decoding Visualization</b> — CTC probability heatmap showing character predictions over time with confidence-colored output</p>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <img src="dash-images/005_ELECTRODE_IMPORTANCE.PNG" alt="Electrode Importance"/>
+      <p align="center"><b>Electrode Importance</b> — gradient-based saliency maps revealing which electrodes and timesteps drive decoding decisions</p>
+    </td>
+    <td width="50%">
+      <img src="dash-images/002_NEURAL_TRAJECTORIES.PNG" alt="Neural Trajectories"/>
+      <p align="center"><b>Neural Trajectories</b> — 3D PCA visualization of neural state evolution during handwriting, colored by timestep</p>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <img src="dash-images/006_DECODING_HYPOTHESIS.PNG" alt="Beam Search Hypotheses"/>
+      <p align="center"><b>Beam Search Hypotheses</b> — ranked decoding candidates with scores, showing how the model narrows down to the best transcription</p>
+    </td>
+    <td width="50%">
+      <img src="dash-images/003_EMBEDDINGS.PNG" alt="Embedding Scatter"/>
+      <p align="center"><b>Neural Representations</b> — PCA/t-SNE embedding scatter of learned character representations, color-coded by letter identity</p>
+    </td>
+  </tr>
+</table>
 
 ## Quick Start
 
