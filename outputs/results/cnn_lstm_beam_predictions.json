@@ -1,0 +1,3110 @@
+{
+  "greedy": [
+    {
+      "ref": "h",
+      "pred": "h"
+    },
+    {
+      "ref": "p",
+      "pred": "p"
+    },
+    {
+      "ref": "q",
+      "pred": "q"
+    },
+    {
+      "ref": "i",
+      "pred": "i"
+    },
+    {
+      "ref": "g",
+      "pred": "g"
+    },
+    {
+      "ref": "p",
+      "pred": "p"
+    },
+    {
+      "ref": "e",
+      "pred": "e"
+    },
+    {
+      "ref": "z",
+      "pred": "z"
+    },
+    {
+      "ref": "n",
+      "pred": "n"
+    },
+    {
+      "ref": "e",
+      "pred": "e"
+    },
+    {
+      "ref": "h",
+      "pred": "n"
+    },
+    {
+      "ref": "o",
+      "pred": "o"
+    },
+    {
+      "ref": "g",
+      "pred": "g"
+    },
+    {
+      "ref": "o",
+      "pred": "o"
+    },
+    {
+      "ref": "q",
+      "pred": "q"
+    },
+    {
+      "ref": "k",
+      "pred": "k"
+    },
+    {
+      "ref": "i",
+      "pred": "i"
+    },
+    {
+      "ref": "b",
+      "pred": "b"
+    },
+    {
+      "ref": "h",
+      "pred": "h"
+    },
+    {
+      "ref": "k",
+      "pred": "k"
+    },
+    {
+      "ref": "i worked for years to perfect my photography",
+      "pred": "i worked for years to perfect my photography"
+    },
+    {
+      "ref": "j",
+      "pred": "j"
+    },
+    {
+      "ref": "",
+      "pred": ""
+    },
+    {
+      "ref": "c",
+      "pred": "c"
+    },
+    {
+      "ref": "a",
+      "pred": "a"
+    },
+    {
+      "ref": "a",
+      "pred": "a"
+    },
+    {
+      "ref": "t",
+      "pred": "t"
+    },
+    {
+      "ref": "s",
+      "pred": "s"
+    },
+    {
+      "ref": "u",
+      "pred": "u"
+    },
+    {
+      "ref": "y",
+      "pred": "y"
+    },
+    {
+      "ref": "everyone needs to know polish",
+      "pred": "everyone needs to know polish"
+    },
+    {
+      "ref": "i heard my friend is going into town today",
+      "pred": "i heard my friend is going into town today"
+    },
+    {
+      "ref": "i",
+      "pred": "i"
+    },
+    {
+      "ref": "m",
+      "pred": "m"
+    },
+    {
+      "ref": "d",
+      "pred": "d"
+    },
+    {
+      "ref": "o",
+      "pred": "o"
+    },
+    {
+      "ref": "",
+      "pred": ""
+    },
+    {
+      "ref": "x",
+      "pred": "x"
+    },
+    {
+      "ref": "his touch was like a doctors firm and impersonal",
+      "pred": "his touch was like a doctors firm and impersonal"
+    },
+    {
+      "ref": "c",
+      "pred": "c"
+    },
+    {
+      "ref": "the job requires extra pluck and zeal from every young wage earner",
+      "pred": "the job requires extra pluck and zeal from every young wage earner"
+    },
+    {
+      "ref": "it hurts",
+      "pred": "it hurts"
+    },
+    {
+      "ref": "",
+      "pred": "z"
+    },
+    {
+      "ref": "so childish",
+      "pred": "so childish"
+    },
+    {
+      "ref": "o",
+      "pred": "o"
+    },
+    {
+      "ref": "s",
+      "pred": "s"
+    },
+    {
+      "ref": "t",
+      "pred": "t"
+    },
+    {
+      "ref": "o",
+      "pred": "o"
+    },
+    {
+      "ref": "having an extra day every four years makes things very complicated",
+      "pred": "having an extra day every four years makes things very complicated"
+    },
+    {
+      "ref": "g",
+      "pred": "g"
+    },
+    {
+      "ref": "p",
+      "pred": "p"
+    },
+    {
+      "ref": "u",
+      "pred": "u"
+    },
+    {
+      "ref": "the job of waxing linoleum frequently peeves chintzy kids",
+      "pred": "the job of waxing linoleum frequently peeves chintzy kids"
+    },
+    {
+      "ref": "rock music",
+      "pred": "rock music"
+    },
+    {
+      "ref": "b",
+      "pred": "b"
+    },
+    {
+      "ref": "",
+      "pred": ""
+    },
+    {
+      "ref": "s",
+      "pred": "s"
+    },
+    {
+      "ref": "q",
+      "pred": "q"
+    },
+    {
+      "ref": "i like when you sit with me and read the paper",
+      "pred": "i like when you sit with me and read the paper"
+    },
+    {
+      "ref": "i",
+      "pred": "i"
+    },
+    {
+      "ref": "t",
+      "pred": "t"
+    },
+    {
+      "ref": "",
+      "pred": ""
+    },
+    {
+      "ref": "d",
+      "pred": "d"
+    },
+    {
+      "ref": "u",
+      "pred": "u"
+    },
+    {
+      "ref": "y",
+      "pred": "y"
+    },
+    {
+      "ref": "and whats in that trunk",
+      "pred": "and whats in that trunk"
+    },
+    {
+      "ref": "o",
+      "pred": "o"
+    },
+    {
+      "ref": "f",
+      "pred": "f"
+    },
+    {
+      "ref": "s",
+      "pred": "s"
+    },
+    {
+      "ref": "s",
+      "pred": "s"
+    },
+    {
+      "ref": "p",
+      "pred": "p"
+    },
+    {
+      "ref": "",
+      "pred": ""
+    },
+    {
+      "ref": "summer flash floods achieve little beyond destroying crops",
+      "pred": "summer flash floods achieve little beyond destroying crops"
+    },
+    {
+      "ref": "l",
+      "pred": "l"
+    },
+    {
+      "ref": "c",
+      "pred": "c"
+    },
+    {
+      "ref": "d",
+      "pred": "d"
+    },
+    {
+      "ref": "i",
+      "pred": "i"
+    },
+    {
+      "ref": "u",
+      "pred": "u"
+    },
+    {
+      "ref": "x",
+      "pred": "x"
+    },
+    {
+      "ref": "a",
+      "pred": "a"
+    },
+    {
+      "ref": "r",
+      "pred": "r"
+    },
+    {
+      "ref": "u",
+      "pred": "u"
+    },
+    {
+      "ref": "c",
+      "pred": "c"
+    },
+    {
+      "ref": "v",
+      "pred": "v"
+    },
+    {
+      "ref": "c",
+      "pred": "c"
+    },
+    {
+      "ref": "v",
+      "pred": "v"
+    },
+    {
+      "ref": "",
+      "pred": ""
+    },
+    {
+      "ref": "t",
+      "pred": "t"
+    },
+    {
+      "ref": "f",
+      "pred": "f"
+    },
+    {
+      "ref": "c",
+      "pred": "c"
+    },
+    {
+      "ref": "",
+      "pred": ""
+    },
+    {
+      "ref": "t",
+      "pred": "t"
+    },
+    {
+      "ref": "h",
+      "pred": "h"
+    },
+    {
+      "ref": "b",
+      "pred": "b"
+    },
+    {
+      "ref": "p",
+      "pred": "p"
+    },
+    {
+      "ref": "x",
+      "pred": "x"
+    },
+    {
+      "ref": "f",
+      "pred": "f"
+    },
+    {
+      "ref": "n",
+      "pred": "n"
+    },
+    {
+      "ref": "v",
+      "pred": "v"
+    },
+    {
+      "ref": "i",
+      "pred": "i"
+    },
+    {
+      "ref": "z",
+      "pred": "z"
+    },
+    {
+      "ref": "m",
+      "pred": "m"
+    },
+    {
+      "ref": "c",
+      "pred": "c"
+    },
+    {
+      "ref": "g",
+      "pred": "g"
+    },
+    {
+      "ref": "f",
+      "pred": "f"
+    },
+    {
+      "ref": "swan lake",
+      "pred": "swan lake"
+    },
+    {
+      "ref": "c",
+      "pred": "c"
+    },
+    {
+      "ref": "r",
+      "pred": "r"
+    },
+    {
+      "ref": "a",
+      "pred": "a"
+    },
+    {
+      "ref": "to be truthful she hadnt a clue what she was doing",
+      "pred": "to be truthful she hadnt a clue what she was doing"
+    },
+    {
+      "ref": "y",
+      "pred": "y"
+    },
+    {
+      "ref": "q",
+      "pred": "q"
+    },
+    {
+      "ref": "z",
+      "pred": "z"
+    },
+    {
+      "ref": "v",
+      "pred": "v"
+    },
+    {
+      "ref": "d",
+      "pred": "d"
+    },
+    {
+      "ref": "v",
+      "pred": "v"
+    },
+    {
+      "ref": "pointless",
+      "pred": "pointless"
+    },
+    {
+      "ref": "has the furniture been in store for very long",
+      "pred": "has the furniture been in store for very long"
+    },
+    {
+      "ref": "d",
+      "pred": "o"
+    },
+    {
+      "ref": "can you make the blind see",
+      "pred": "can you make the blind see"
+    },
+    {
+      "ref": "e",
+      "pred": "e"
+    },
+    {
+      "ref": "o",
+      "pred": "o"
+    },
+    {
+      "ref": "p",
+      "pred": "p"
+    },
+    {
+      "ref": "v",
+      "pred": "v"
+    },
+    {
+      "ref": "you want me to sing",
+      "pred": "you want me to sing"
+    },
+    {
+      "ref": "f",
+      "pred": "f"
+    },
+    {
+      "ref": "x",
+      "pred": "y"
+    },
+    {
+      "ref": "r",
+      "pred": "r"
+    },
+    {
+      "ref": "u",
+      "pred": "u"
+    },
+    {
+      "ref": "s",
+      "pred": "s"
+    },
+    {
+      "ref": "i would provide funding to small families",
+      "pred": "i would provide funding to small families"
+    },
+    {
+      "ref": "z",
+      "pred": "z"
+    },
+    {
+      "ref": "z",
+      "pred": "z"
+    },
+    {
+      "ref": "he would not become an officer of our chapter",
+      "pred": "he would not become an officer of our chapter"
+    },
+    {
+      "ref": "q",
+      "pred": "q"
+    },
+    {
+      "ref": "h",
+      "pred": "h"
+    },
+    {
+      "ref": "e",
+      "pred": "e"
+    },
+    {
+      "ref": "h",
+      "pred": "h"
+    },
+    {
+      "ref": "h",
+      "pred": "h"
+    },
+    {
+      "ref": "b",
+      "pred": "b"
+    },
+    {
+      "ref": "k",
+      "pred": "k"
+    },
+    {
+      "ref": "m",
+      "pred": "m"
+    },
+    {
+      "ref": "s",
+      "pred": "s"
+    },
+    {
+      "ref": "y",
+      "pred": "y"
+    },
+    {
+      "ref": "v",
+      "pred": "v"
+    },
+    {
+      "ref": "v",
+      "pred": "v"
+    },
+    {
+      "ref": "w",
+      "pred": "w"
+    },
+    {
+      "ref": "m",
+      "pred": "m"
+    },
+    {
+      "ref": "e",
+      "pred": "e"
+    },
+    {
+      "ref": "j",
+      "pred": "j"
+    },
+    {
+      "ref": "v",
+      "pred": "v"
+    },
+    {
+      "ref": "imagine all the people living life in peace",
+      "pred": "imagine all the people living life in peace"
+    },
+    {
+      "ref": "e",
+      "pred": "e"
+    },
+    {
+      "ref": "x",
+      "pred": "x"
+    },
+    {
+      "ref": "w",
+      "pred": "w"
+    },
+    {
+      "ref": "p",
+      "pred": "p"
+    },
+    {
+      "ref": "i like when you sit with me and read the paper",
+      "pred": "i like when you sit with me and read the paper"
+    },
+    {
+      "ref": "o",
+      "pred": "o"
+    },
+    {
+      "ref": "w",
+      "pred": "w"
+    },
+    {
+      "ref": "w",
+      "pred": "w"
+    },
+    {
+      "ref": "r",
+      "pred": "r"
+    },
+    {
+      "ref": "financial control may have been a vital weapon",
+      "pred": "financial control may have been a vital weapon"
+    },
+    {
+      "ref": "we got a lot of support from other trade unions",
+      "pred": "we got a lot of support from other trade unions"
+    },
+    {
+      "ref": "j",
+      "pred": "j"
+    },
+    {
+      "ref": "m",
+      "pred": "m"
+    },
+    {
+      "ref": "j",
+      "pred": "j"
+    },
+    {
+      "ref": "f",
+      "pred": "f"
+    },
+    {
+      "ref": "v",
+      "pred": "v"
+    },
+    {
+      "ref": "z",
+      "pred": "z"
+    },
+    {
+      "ref": "i",
+      "pred": "i"
+    },
+    {
+      "ref": "v",
+      "pred": "v"
+    },
+    {
+      "ref": "w",
+      "pred": "w"
+    },
+    {
+      "ref": "p",
+      "pred": "p"
+    },
+    {
+      "ref": "s",
+      "pred": "s"
+    },
+    {
+      "ref": "c",
+      "pred": "c"
+    },
+    {
+      "ref": "t",
+      "pred": "t"
+    },
+    {
+      "ref": "w",
+      "pred": "w"
+    },
+    {
+      "ref": "the human was already getting to its feet",
+      "pred": "the human was already getting to its feet"
+    },
+    {
+      "ref": "y",
+      "pred": "y"
+    },
+    {
+      "ref": "good idea",
+      "pred": "good idea"
+    },
+    {
+      "ref": "o",
+      "pred": "o"
+    },
+    {
+      "ref": "p",
+      "pred": "p"
+    },
+    {
+      "ref": "a small coal fire burned in the grate",
+      "pred": "a small coal fire burned in the grate"
+    },
+    {
+      "ref": "r",
+      "pred": "r"
+    },
+    {
+      "ref": "f",
+      "pred": "f"
+    },
+    {
+      "ref": "look here",
+      "pred": "look here"
+    },
+    {
+      "ref": "l",
+      "pred": "l"
+    },
+    {
+      "ref": "he mumbled about official secrets and civil service discipline",
+      "pred": "he mumbled about official secrets and civil service discipline"
+    },
+    {
+      "ref": "g",
+      "pred": "g"
+    },
+    {
+      "ref": "m",
+      "pred": "m"
+    },
+    {
+      "ref": "x",
+      "pred": "x"
+    },
+    {
+      "ref": "r",
+      "pred": "p"
+    },
+    {
+      "ref": "e",
+      "pred": "e"
+    },
+    {
+      "ref": "w",
+      "pred": "w"
+    },
+    {
+      "ref": "b",
+      "pred": "b"
+    },
+    {
+      "ref": "l",
+      "pred": "l"
+    },
+    {
+      "ref": "none of your business",
+      "pred": "none of your business"
+    },
+    {
+      "ref": "i",
+      "pred": "i"
+    },
+    {
+      "ref": "the blade snapped open with a soft click",
+      "pred": "the blade snapped open with a soft click"
+    },
+    {
+      "ref": "o",
+      "pred": "o"
+    },
+    {
+      "ref": "b",
+      "pred": "b"
+    },
+    {
+      "ref": "t",
+      "pred": "t"
+    },
+    {
+      "ref": "s",
+      "pred": "s"
+    },
+    {
+      "ref": "k",
+      "pred": "k"
+    },
+    {
+      "ref": "a",
+      "pred": "a"
+    },
+    {
+      "ref": "e",
+      "pred": "e"
+    },
+    {
+      "ref": "e",
+      "pred": "e"
+    },
+    {
+      "ref": "e",
+      "pred": "e"
+    },
+    {
+      "ref": "o",
+      "pred": "o"
+    },
+    {
+      "ref": "c",
+      "pred": "c"
+    },
+    {
+      "ref": "k",
+      "pred": "k"
+    },
+    {
+      "ref": "v",
+      "pred": "v"
+    },
+    {
+      "ref": "f",
+      "pred": "f"
+    },
+    {
+      "ref": "l",
+      "pred": "l"
+    },
+    {
+      "ref": "f",
+      "pred": "f"
+    },
+    {
+      "ref": "f",
+      "pred": "f"
+    },
+    {
+      "ref": "l",
+      "pred": "l"
+    },
+    {
+      "ref": "c",
+      "pred": "c"
+    },
+    {
+      "ref": "k",
+      "pred": "k"
+    },
+    {
+      "ref": "i",
+      "pred": "i"
+    },
+    {
+      "ref": "u",
+      "pred": "u"
+    },
+    {
+      "ref": "x",
+      "pred": "x"
+    },
+    {
+      "ref": "e",
+      "pred": "e"
+    },
+    {
+      "ref": "u",
+      "pred": "u"
+    },
+    {
+      "ref": "n",
+      "pred": "n"
+    },
+    {
+      "ref": "m",
+      "pred": "m"
+    },
+    {
+      "ref": "the mother snapped back at him and frowned",
+      "pred": "the mother snapped back at him and frowned"
+    },
+    {
+      "ref": "l",
+      "pred": "l"
+    },
+    {
+      "ref": "paul thinks he has everything organized",
+      "pred": "paul thinks he has everything organized"
+    },
+    {
+      "ref": "e",
+      "pred": "e"
+    },
+    {
+      "ref": "im waiting for you to settle down",
+      "pred": "im waiting for you to settle down"
+    },
+    {
+      "ref": "when the sunlight strikes raindrops in the air",
+      "pred": "when the sunlight strikes raindrops in the air"
+    },
+    {
+      "ref": "e",
+      "pred": "e"
+    },
+    {
+      "ref": "b",
+      "pred": "b"
+    },
+    {
+      "ref": "p",
+      "pred": "p"
+    },
+    {
+      "ref": "the income itself was not grand by any standard",
+      "pred": "the income itself was not grand by any standard"
+    },
+    {
+      "ref": "small suitcase",
+      "pred": "small suitcase"
+    },
+    {
+      "ref": "s",
+      "pred": "s"
+    },
+    {
+      "ref": "i changed my mind at the last minute",
+      "pred": "i changed my mind at the last minute"
+    },
+    {
+      "ref": "i",
+      "pred": "i"
+    },
+    {
+      "ref": "f",
+      "pred": "f"
+    },
+    {
+      "ref": "",
+      "pred": ""
+    },
+    {
+      "ref": "post office",
+      "pred": "post office"
+    },
+    {
+      "ref": "within thirty seconds the army had landed",
+      "pred": "within thirty seconds the army had landed"
+    },
+    {
+      "ref": "need to know",
+      "pred": "need to know"
+    },
+    {
+      "ref": "q",
+      "pred": "q"
+    },
+    {
+      "ref": "eagle nest",
+      "pred": "eagle nest"
+    },
+    {
+      "ref": "c",
+      "pred": "c"
+    },
+    {
+      "ref": "l",
+      "pred": "l"
+    },
+    {
+      "ref": "w",
+      "pred": "w"
+    },
+    {
+      "ref": "m",
+      "pred": "m"
+    },
+    {
+      "ref": "y",
+      "pred": "y"
+    },
+    {
+      "ref": "l",
+      "pred": "l"
+    },
+    {
+      "ref": "s",
+      "pred": "s"
+    },
+    {
+      "ref": "h",
+      "pred": "h"
+    },
+    {
+      "ref": "e",
+      "pred": "e"
+    },
+    {
+      "ref": "no choice",
+      "pred": "no choice"
+    },
+    {
+      "ref": "f",
+      "pred": "f"
+    },
+    {
+      "ref": "y",
+      "pred": "y"
+    },
+    {
+      "ref": "y",
+      "pred": "y"
+    },
+    {
+      "ref": "d",
+      "pred": "d"
+    },
+    {
+      "ref": "x",
+      "pred": "x"
+    },
+    {
+      "ref": "l",
+      "pred": "l"
+    },
+    {
+      "ref": "a",
+      "pred": "a"
+    },
+    {
+      "ref": "just keep examining every low bid quoted for zinc etchings",
+      "pred": "just keep examining every low bid quoted for zinc etchings"
+    },
+    {
+      "ref": "f",
+      "pred": "f"
+    },
+    {
+      "ref": "time is money",
+      "pred": "time is money"
+    },
+    {
+      "ref": "p",
+      "pred": "p"
+    },
+    {
+      "ref": "l",
+      "pred": "l"
+    },
+    {
+      "ref": "m",
+      "pred": "m"
+    },
+    {
+      "ref": "z",
+      "pred": "z"
+    },
+    {
+      "ref": "o",
+      "pred": "o"
+    },
+    {
+      "ref": "what was the future of the human race",
+      "pred": "what was the future of the human race"
+    },
+    {
+      "ref": "z",
+      "pred": "z"
+    },
+    {
+      "ref": "g",
+      "pred": "g"
+    },
+    {
+      "ref": "j",
+      "pred": "j"
+    },
+    {
+      "ref": "but as often happened fate dealt out a different hand",
+      "pred": "but as often happened fate dealt out a different hand"
+    },
+    {
+      "ref": "w",
+      "pred": "w"
+    },
+    {
+      "ref": "t",
+      "pred": "t"
+    },
+    {
+      "ref": "o",
+      "pred": "o"
+    },
+    {
+      "ref": "yes he was medically qualified as well as being a biologist",
+      "pred": "yes he was medically qualified as well as being a biologist"
+    },
+    {
+      "ref": "o",
+      "pred": "o"
+    },
+    {
+      "ref": "n",
+      "pred": "n"
+    },
+    {
+      "ref": "a",
+      "pred": "a"
+    },
+    {
+      "ref": "u",
+      "pred": "u"
+    },
+    {
+      "ref": "r",
+      "pred": "r"
+    },
+    {
+      "ref": "u",
+      "pred": "u"
+    },
+    {
+      "ref": "f",
+      "pred": "f"
+    },
+    {
+      "ref": "e",
+      "pred": "e"
+    },
+    {
+      "ref": "n",
+      "pred": "n"
+    },
+    {
+      "ref": "why did i have to fall for a suicidal maniac",
+      "pred": "why did i have to fall for a suicidal maniac"
+    },
+    {
+      "ref": "a",
+      "pred": "a"
+    },
+    {
+      "ref": "x",
+      "pred": "x"
+    },
+    {
+      "ref": "g",
+      "pred": "g"
+    },
+    {
+      "ref": "a",
+      "pred": "a"
+    },
+    {
+      "ref": "q",
+      "pred": "q"
+    },
+    {
+      "ref": "z",
+      "pred": "z"
+    },
+    {
+      "ref": "t",
+      "pred": "t"
+    },
+    {
+      "ref": "keep in touch",
+      "pred": "keep in touch"
+    },
+    {
+      "ref": "z",
+      "pred": "z"
+    },
+    {
+      "ref": "n",
+      "pred": "n"
+    },
+    {
+      "ref": "r",
+      "pred": "r"
+    },
+    {
+      "ref": "see a doctor",
+      "pred": "see a doctor"
+    },
+    {
+      "ref": "n",
+      "pred": "n"
+    },
+    {
+      "ref": "while this is not closure at all it closes a chapter",
+      "pred": "while this ie not clesure at alls nat closes a chaten"
+    },
+    {
+      "ref": "z",
+      "pred": "z"
+    },
+    {
+      "ref": "k",
+      "pred": "k"
+    },
+    {
+      "ref": "leave her alone",
+      "pred": "leave her alone"
+    },
+    {
+      "ref": "d",
+      "pred": "d"
+    },
+    {
+      "ref": "u",
+      "pred": "u"
+    },
+    {
+      "ref": "z",
+      "pred": "z"
+    },
+    {
+      "ref": "d",
+      "pred": "d"
+    },
+    {
+      "ref": "x",
+      "pred": "x"
+    },
+    {
+      "ref": "p",
+      "pred": "p"
+    },
+    {
+      "ref": "q",
+      "pred": "q"
+    },
+    {
+      "ref": "v",
+      "pred": "v"
+    },
+    {
+      "ref": "d",
+      "pred": "d"
+    },
+    {
+      "ref": "he felt anger and concern in equal measures",
+      "pred": "he felt anger and concern in equal measures"
+    },
+    {
+      "ref": "",
+      "pred": ""
+    },
+    {
+      "ref": "a bonfire blazed inside a small circle of stones",
+      "pred": "a bonfire blazed inside a small circle of stones"
+    },
+    {
+      "ref": "y",
+      "pred": "y"
+    },
+    {
+      "ref": "t",
+      "pred": "t"
+    },
+    {
+      "ref": "imagine all the people living life in peace",
+      "pred": "imagine all the people living life in peace"
+    },
+    {
+      "ref": "q",
+      "pred": "q"
+    },
+    {
+      "ref": "j",
+      "pred": "j"
+    },
+    {
+      "ref": "j",
+      "pred": "j"
+    },
+    {
+      "ref": "i guarantee youd come to the same conclusion sir",
+      "pred": "i guarantee youd come to the same conclusion sir"
+    },
+    {
+      "ref": "v",
+      "pred": "v"
+    },
+    {
+      "ref": "throw a party",
+      "pred": "throw a party"
+    },
+    {
+      "ref": "a",
+      "pred": "a"
+    },
+    {
+      "ref": "h",
+      "pred": "h"
+    },
+    {
+      "ref": "i",
+      "pred": "i"
+    },
+    {
+      "ref": "n",
+      "pred": "n"
+    },
+    {
+      "ref": "e",
+      "pred": "e"
+    },
+    {
+      "ref": "m",
+      "pred": "m"
+    },
+    {
+      "ref": "s",
+      "pred": "s"
+    },
+    {
+      "ref": "v",
+      "pred": "v"
+    },
+    {
+      "ref": "waxy and quivering the jocks fumbled the pizza",
+      "pred": "waxy and quivering the jocks fumbled the pizza"
+    },
+    {
+      "ref": "v",
+      "pred": "v"
+    },
+    {
+      "ref": "f",
+      "pred": "f"
+    },
+    {
+      "ref": "d",
+      "pred": "d"
+    },
+    {
+      "ref": "p",
+      "pred": "p"
+    },
+    {
+      "ref": "then i forgot about it as the carrots boiled over",
+      "pred": "then i forgot about it as the carrots boiled over"
+    },
+    {
+      "ref": "he was quick",
+      "pred": "he was guck"
+    },
+    {
+      "ref": "ramsay paused bowed mockingly to her and turned back",
+      "pred": "ramsay paused bowed mockinely to her and turned back"
+    },
+    {
+      "ref": "o",
+      "pred": "o"
+    },
+    {
+      "ref": "k",
+      "pred": "k"
+    },
+    {
+      "ref": "z",
+      "pred": "z"
+    },
+    {
+      "ref": "o",
+      "pred": "o"
+    },
+    {
+      "ref": "d",
+      "pred": "d"
+    },
+    {
+      "ref": "k",
+      "pred": "k"
+    },
+    {
+      "ref": "y",
+      "pred": "y"
+    },
+    {
+      "ref": "s",
+      "pred": "s"
+    },
+    {
+      "ref": "its going to be hard to say goodbye",
+      "pred": "its going to be hard to say goodbye"
+    },
+    {
+      "ref": "s",
+      "pred": "s"
+    },
+    {
+      "ref": "o",
+      "pred": "o"
+    },
+    {
+      "ref": "g",
+      "pred": "g"
+    },
+    {
+      "ref": "u",
+      "pred": "u"
+    },
+    {
+      "ref": "n",
+      "pred": "n"
+    },
+    {
+      "ref": "i",
+      "pred": "i"
+    },
+    {
+      "ref": "he walked briskly to the door then halted",
+      "pred": "he walked briskly to the door then halted"
+    },
+    {
+      "ref": "g",
+      "pred": "g"
+    },
+    {
+      "ref": "imagine a star with a mass ten times that of the sun",
+      "pred": "imagine a star with a mass ten times that of the sun"
+    },
+    {
+      "ref": "",
+      "pred": ""
+    },
+    {
+      "ref": "barry won the wave ski section despite thick fog",
+      "pred": "barry won the wave ski section despite thick fog"
+    },
+    {
+      "ref": "z",
+      "pred": "z"
+    },
+    {
+      "ref": "r",
+      "pred": "r"
+    },
+    {
+      "ref": "x",
+      "pred": "x"
+    },
+    {
+      "ref": "d",
+      "pred": "d"
+    },
+    {
+      "ref": "m",
+      "pred": "m"
+    },
+    {
+      "ref": "m",
+      "pred": "m"
+    },
+    {
+      "ref": "never mind ive got a few cans",
+      "pred": "never mind ive got a few cans"
+    },
+    {
+      "ref": "y",
+      "pred": "y"
+    },
+    {
+      "ref": "d",
+      "pred": "d"
+    },
+    {
+      "ref": "e",
+      "pred": "e"
+    },
+    {
+      "ref": "j",
+      "pred": "j"
+    },
+    {
+      "ref": "k",
+      "pred": "k"
+    },
+    {
+      "ref": "o",
+      "pred": "o"
+    },
+    {
+      "ref": "g",
+      "pred": "g"
+    },
+    {
+      "ref": "s",
+      "pred": "s"
+    },
+    {
+      "ref": "water bottle",
+      "pred": "water bottle"
+    },
+    {
+      "ref": "q",
+      "pred": "q"
+    },
+    {
+      "ref": "in fact they go a little bit past the start",
+      "pred": "in fact they go a little bit past the stant"
+    },
+    {
+      "ref": "a",
+      "pred": "a"
+    },
+    {
+      "ref": "q",
+      "pred": "q"
+    },
+    {
+      "ref": "e",
+      "pred": "e"
+    },
+    {
+      "ref": "whats wrong",
+      "pred": "whats wrong"
+    },
+    {
+      "ref": "rio de janerio brazil",
+      "pred": "rio de janerio brazil"
+    }
+  ],
+  "best_beam_lm": [
+    {
+      "ref": "h",
+      "pred": "h"
+    },
+    {
+      "ref": "p",
+      "pred": "p"
+    },
+    {
+      "ref": "q",
+      "pred": "q"
+    },
+    {
+      "ref": "i",
+      "pred": "i"
+    },
+    {
+      "ref": "g",
+      "pred": "g"
+    },
+    {
+      "ref": "p",
+      "pred": "p"
+    },
+    {
+      "ref": "e",
+      "pred": "e"
+    },
+    {
+      "ref": "z",
+      "pred": "z"
+    },
+    {
+      "ref": "n",
+      "pred": "n"
+    },
+    {
+      "ref": "e",
+      "pred": "e"
+    },
+    {
+      "ref": "h",
+      "pred": "n"
+    },
+    {
+      "ref": "o",
+      "pred": "o"
+    },
+    {
+      "ref": "g",
+      "pred": "g"
+    },
+    {
+      "ref": "o",
+      "pred": "o"
+    },
+    {
+      "ref": "q",
+      "pred": "q"
+    },
+    {
+      "ref": "k",
+      "pred": "k"
+    },
+    {
+      "ref": "i",
+      "pred": "i"
+    },
+    {
+      "ref": "b",
+      "pred": "b"
+    },
+    {
+      "ref": "h",
+      "pred": "h"
+    },
+    {
+      "ref": "k",
+      "pred": "k"
+    },
+    {
+      "ref": "i worked for years to perfect my photography",
+      "pred": "i worked for years to perfect my photography"
+    },
+    {
+      "ref": "j",
+      "pred": "j"
+    },
+    {
+      "ref": "",
+      "pred": ""
+    },
+    {
+      "ref": "c",
+      "pred": "c"
+    },
+    {
+      "ref": "a",
+      "pred": "a"
+    },
+    {
+      "ref": "a",
+      "pred": "a"
+    },
+    {
+      "ref": "t",
+      "pred": "t"
+    },
+    {
+      "ref": "s",
+      "pred": "s"
+    },
+    {
+      "ref": "u",
+      "pred": "u"
+    },
+    {
+      "ref": "y",
+      "pred": "y"
+    },
+    {
+      "ref": "everyone needs to know polish",
+      "pred": "everyone needs to know polish"
+    },
+    {
+      "ref": "i heard my friend is going into town today",
+      "pred": "i heard my friend is going into town today"
+    },
+    {
+      "ref": "i",
+      "pred": "i"
+    },
+    {
+      "ref": "m",
+      "pred": "m"
+    },
+    {
+      "ref": "d",
+      "pred": "d"
+    },
+    {
+      "ref": "o",
+      "pred": "o"
+    },
+    {
+      "ref": "",
+      "pred": ""
+    },
+    {
+      "ref": "x",
+      "pred": "x"
+    },
+    {
+      "ref": "his touch was like a doctors firm and impersonal",
+      "pred": "his touch was like a doctors firm and impersonal"
+    },
+    {
+      "ref": "c",
+      "pred": "c"
+    },
+    {
+      "ref": "the job requires extra pluck and zeal from every young wage earner",
+      "pred": "the job requires extra pluck and zeal from every young wage earner"
+    },
+    {
+      "ref": "it hurts",
+      "pred": "it hurts"
+    },
+    {
+      "ref": "",
+      "pred": "z"
+    },
+    {
+      "ref": "so childish",
+      "pred": "so childish"
+    },
+    {
+      "ref": "o",
+      "pred": "o"
+    },
+    {
+      "ref": "s",
+      "pred": "s"
+    },
+    {
+      "ref": "t",
+      "pred": "t"
+    },
+    {
+      "ref": "o",
+      "pred": "o"
+    },
+    {
+      "ref": "having an extra day every four years makes things very complicated",
+      "pred": "having an extra day every four years makes things very complicated"
+    },
+    {
+      "ref": "g",
+      "pred": "g"
+    },
+    {
+      "ref": "p",
+      "pred": "p"
+    },
+    {
+      "ref": "u",
+      "pred": "u"
+    },
+    {
+      "ref": "the job of waxing linoleum frequently peeves chintzy kids",
+      "pred": "the job of waxing linoleum frequently peeves chintzy kids"
+    },
+    {
+      "ref": "rock music",
+      "pred": "rock music"
+    },
+    {
+      "ref": "b",
+      "pred": "b"
+    },
+    {
+      "ref": "",
+      "pred": ""
+    },
+    {
+      "ref": "s",
+      "pred": "s"
+    },
+    {
+      "ref": "q",
+      "pred": "q"
+    },
+    {
+      "ref": "i like when you sit with me and read the paper",
+      "pred": "i like when you sit with me and read the paper"
+    },
+    {
+      "ref": "i",
+      "pred": "i"
+    },
+    {
+      "ref": "t",
+      "pred": "t"
+    },
+    {
+      "ref": "",
+      "pred": ""
+    },
+    {
+      "ref": "d",
+      "pred": "d"
+    },
+    {
+      "ref": "u",
+      "pred": "u"
+    },
+    {
+      "ref": "y",
+      "pred": "y"
+    },
+    {
+      "ref": "and whats in that trunk",
+      "pred": "and whats in that trunk"
+    },
+    {
+      "ref": "o",
+      "pred": "o"
+    },
+    {
+      "ref": "f",
+      "pred": "f"
+    },
+    {
+      "ref": "s",
+      "pred": "s"
+    },
+    {
+      "ref": "s",
+      "pred": "s"
+    },
+    {
+      "ref": "p",
+      "pred": "p"
+    },
+    {
+      "ref": "",
+      "pred": ""
+    },
+    {
+      "ref": "summer flash floods achieve little beyond destroying crops",
+      "pred": "summer flash floods achieve little beyond destroying crops"
+    },
+    {
+      "ref": "l",
+      "pred": "l"
+    },
+    {
+      "ref": "c",
+      "pred": "c"
+    },
+    {
+      "ref": "d",
+      "pred": "d"
+    },
+    {
+      "ref": "i",
+      "pred": "i"
+    },
+    {
+      "ref": "u",
+      "pred": "u"
+    },
+    {
+      "ref": "x",
+      "pred": "x"
+    },
+    {
+      "ref": "a",
+      "pred": "a"
+    },
+    {
+      "ref": "r",
+      "pred": "r"
+    },
+    {
+      "ref": "u",
+      "pred": "u"
+    },
+    {
+      "ref": "c",
+      "pred": "c"
+    },
+    {
+      "ref": "v",
+      "pred": "v"
+    },
+    {
+      "ref": "c",
+      "pred": "c"
+    },
+    {
+      "ref": "v",
+      "pred": "v"
+    },
+    {
+      "ref": "",
+      "pred": ""
+    },
+    {
+      "ref": "t",
+      "pred": "t"
+    },
+    {
+      "ref": "f",
+      "pred": "f"
+    },
+    {
+      "ref": "c",
+      "pred": "c"
+    },
+    {
+      "ref": "",
+      "pred": ""
+    },
+    {
+      "ref": "t",
+      "pred": "t"
+    },
+    {
+      "ref": "h",
+      "pred": "h"
+    },
+    {
+      "ref": "b",
+      "pred": "b"
+    },
+    {
+      "ref": "p",
+      "pred": "p"
+    },
+    {
+      "ref": "x",
+      "pred": "x"
+    },
+    {
+      "ref": "f",
+      "pred": "f"
+    },
+    {
+      "ref": "n",
+      "pred": "n"
+    },
+    {
+      "ref": "v",
+      "pred": "v"
+    },
+    {
+      "ref": "i",
+      "pred": "i"
+    },
+    {
+      "ref": "z",
+      "pred": "z"
+    },
+    {
+      "ref": "m",
+      "pred": "m"
+    },
+    {
+      "ref": "c",
+      "pred": "c"
+    },
+    {
+      "ref": "g",
+      "pred": "g"
+    },
+    {
+      "ref": "f",
+      "pred": "f"
+    },
+    {
+      "ref": "swan lake",
+      "pred": "swan lake"
+    },
+    {
+      "ref": "c",
+      "pred": "c"
+    },
+    {
+      "ref": "r",
+      "pred": "r"
+    },
+    {
+      "ref": "a",
+      "pred": "a"
+    },
+    {
+      "ref": "to be truthful she hadnt a clue what she was doing",
+      "pred": "to be truthful she hadnt a clue what she was doing"
+    },
+    {
+      "ref": "y",
+      "pred": "y"
+    },
+    {
+      "ref": "q",
+      "pred": "q"
+    },
+    {
+      "ref": "z",
+      "pred": "z"
+    },
+    {
+      "ref": "v",
+      "pred": "v"
+    },
+    {
+      "ref": "d",
+      "pred": "d"
+    },
+    {
+      "ref": "v",
+      "pred": "v"
+    },
+    {
+      "ref": "pointless",
+      "pred": "pointless"
+    },
+    {
+      "ref": "has the furniture been in store for very long",
+      "pred": "has the furniture been in store for very long"
+    },
+    {
+      "ref": "d",
+      "pred": "o"
+    },
+    {
+      "ref": "can you make the blind see",
+      "pred": "can you make the blind see"
+    },
+    {
+      "ref": "e",
+      "pred": "e"
+    },
+    {
+      "ref": "o",
+      "pred": "o"
+    },
+    {
+      "ref": "p",
+      "pred": "p"
+    },
+    {
+      "ref": "v",
+      "pred": "v"
+    },
+    {
+      "ref": "you want me to sing",
+      "pred": "you want me to sing"
+    },
+    {
+      "ref": "f",
+      "pred": "f"
+    },
+    {
+      "ref": "x",
+      "pred": "y"
+    },
+    {
+      "ref": "r",
+      "pred": "r"
+    },
+    {
+      "ref": "u",
+      "pred": "u"
+    },
+    {
+      "ref": "s",
+      "pred": "s"
+    },
+    {
+      "ref": "i would provide funding to small families",
+      "pred": "i would provide funding to small families"
+    },
+    {
+      "ref": "z",
+      "pred": "z"
+    },
+    {
+      "ref": "z",
+      "pred": "z"
+    },
+    {
+      "ref": "he would not become an officer of our chapter",
+      "pred": "he would not become an officer of our chapter"
+    },
+    {
+      "ref": "q",
+      "pred": "q"
+    },
+    {
+      "ref": "h",
+      "pred": "h"
+    },
+    {
+      "ref": "e",
+      "pred": "e"
+    },
+    {
+      "ref": "h",
+      "pred": "h"
+    },
+    {
+      "ref": "h",
+      "pred": "h"
+    },
+    {
+      "ref": "b",
+      "pred": "b"
+    },
+    {
+      "ref": "k",
+      "pred": "k"
+    },
+    {
+      "ref": "m",
+      "pred": "m"
+    },
+    {
+      "ref": "s",
+      "pred": "s"
+    },
+    {
+      "ref": "y",
+      "pred": "y"
+    },
+    {
+      "ref": "v",
+      "pred": "v"
+    },
+    {
+      "ref": "v",
+      "pred": "v"
+    },
+    {
+      "ref": "w",
+      "pred": "w"
+    },
+    {
+      "ref": "m",
+      "pred": "m"
+    },
+    {
+      "ref": "e",
+      "pred": "e"
+    },
+    {
+      "ref": "j",
+      "pred": "j"
+    },
+    {
+      "ref": "v",
+      "pred": "v"
+    },
+    {
+      "ref": "imagine all the people living life in peace",
+      "pred": "imagine all the people living life in peace"
+    },
+    {
+      "ref": "e",
+      "pred": "e"
+    },
+    {
+      "ref": "x",
+      "pred": "x"
+    },
+    {
+      "ref": "w",
+      "pred": "w"
+    },
+    {
+      "ref": "p",
+      "pred": "p"
+    },
+    {
+      "ref": "i like when you sit with me and read the paper",
+      "pred": "i like when you sit with me and read the paper"
+    },
+    {
+      "ref": "o",
+      "pred": "o"
+    },
+    {
+      "ref": "w",
+      "pred": "w"
+    },
+    {
+      "ref": "w",
+      "pred": "w"
+    },
+    {
+      "ref": "r",
+      "pred": "r"
+    },
+    {
+      "ref": "financial control may have been a vital weapon",
+      "pred": "financial control may have been a vital weapon"
+    },
+    {
+      "ref": "we got a lot of support from other trade unions",
+      "pred": "we got a lot of support from other trade unions"
+    },
+    {
+      "ref": "j",
+      "pred": "j"
+    },
+    {
+      "ref": "m",
+      "pred": "m"
+    },
+    {
+      "ref": "j",
+      "pred": "j"
+    },
+    {
+      "ref": "f",
+      "pred": "f"
+    },
+    {
+      "ref": "v",
+      "pred": "v"
+    },
+    {
+      "ref": "z",
+      "pred": "z"
+    },
+    {
+      "ref": "i",
+      "pred": "i"
+    },
+    {
+      "ref": "v",
+      "pred": "v"
+    },
+    {
+      "ref": "w",
+      "pred": "w"
+    },
+    {
+      "ref": "p",
+      "pred": "p"
+    },
+    {
+      "ref": "s",
+      "pred": "s"
+    },
+    {
+      "ref": "c",
+      "pred": "c"
+    },
+    {
+      "ref": "t",
+      "pred": "t"
+    },
+    {
+      "ref": "w",
+      "pred": "w"
+    },
+    {
+      "ref": "the human was already getting to its feet",
+      "pred": "the human was already getting to its feet"
+    },
+    {
+      "ref": "y",
+      "pred": "y"
+    },
+    {
+      "ref": "good idea",
+      "pred": "good idea"
+    },
+    {
+      "ref": "o",
+      "pred": "o"
+    },
+    {
+      "ref": "p",
+      "pred": "p"
+    },
+    {
+      "ref": "a small coal fire burned in the grate",
+      "pred": "a small coal fire burned in the grate"
+    },
+    {
+      "ref": "r",
+      "pred": "r"
+    },
+    {
+      "ref": "f",
+      "pred": "f"
+    },
+    {
+      "ref": "look here",
+      "pred": "look here"
+    },
+    {
+      "ref": "l",
+      "pred": "l"
+    },
+    {
+      "ref": "he mumbled about official secrets and civil service discipline",
+      "pred": "he mumbled about official secrets and civil service discipline"
+    },
+    {
+      "ref": "g",
+      "pred": "g"
+    },
+    {
+      "ref": "m",
+      "pred": "m"
+    },
+    {
+      "ref": "x",
+      "pred": "x"
+    },
+    {
+      "ref": "r",
+      "pred": "p"
+    },
+    {
+      "ref": "e",
+      "pred": "e"
+    },
+    {
+      "ref": "w",
+      "pred": "w"
+    },
+    {
+      "ref": "b",
+      "pred": "b"
+    },
+    {
+      "ref": "l",
+      "pred": "l"
+    },
+    {
+      "ref": "none of your business",
+      "pred": "none of your business"
+    },
+    {
+      "ref": "i",
+      "pred": "i"
+    },
+    {
+      "ref": "the blade snapped open with a soft click",
+      "pred": "the blade snapped open with a soft click"
+    },
+    {
+      "ref": "o",
+      "pred": "o"
+    },
+    {
+      "ref": "b",
+      "pred": "b"
+    },
+    {
+      "ref": "t",
+      "pred": "t"
+    },
+    {
+      "ref": "s",
+      "pred": "s"
+    },
+    {
+      "ref": "k",
+      "pred": "k"
+    },
+    {
+      "ref": "a",
+      "pred": "a"
+    },
+    {
+      "ref": "e",
+      "pred": "e"
+    },
+    {
+      "ref": "e",
+      "pred": "e"
+    },
+    {
+      "ref": "e",
+      "pred": "e"
+    },
+    {
+      "ref": "o",
+      "pred": "o"
+    },
+    {
+      "ref": "c",
+      "pred": "c"
+    },
+    {
+      "ref": "k",
+      "pred": "k"
+    },
+    {
+      "ref": "v",
+      "pred": "v"
+    },
+    {
+      "ref": "f",
+      "pred": "f"
+    },
+    {
+      "ref": "l",
+      "pred": "l"
+    },
+    {
+      "ref": "f",
+      "pred": "f"
+    },
+    {
+      "ref": "f",
+      "pred": "f"
+    },
+    {
+      "ref": "l",
+      "pred": "l"
+    },
+    {
+      "ref": "c",
+      "pred": "c"
+    },
+    {
+      "ref": "k",
+      "pred": "k"
+    },
+    {
+      "ref": "i",
+      "pred": "i"
+    },
+    {
+      "ref": "u",
+      "pred": "u"
+    },
+    {
+      "ref": "x",
+      "pred": "x"
+    },
+    {
+      "ref": "e",
+      "pred": "e"
+    },
+    {
+      "ref": "u",
+      "pred": "u"
+    },
+    {
+      "ref": "n",
+      "pred": "n"
+    },
+    {
+      "ref": "m",
+      "pred": "m"
+    },
+    {
+      "ref": "the mother snapped back at him and frowned",
+      "pred": "the mother snapped back at him and frowned"
+    },
+    {
+      "ref": "l",
+      "pred": "l"
+    },
+    {
+      "ref": "paul thinks he has everything organized",
+      "pred": "paul thinks he has everything organized"
+    },
+    {
+      "ref": "e",
+      "pred": "e"
+    },
+    {
+      "ref": "im waiting for you to settle down",
+      "pred": "im waiting for you to settle down"
+    },
+    {
+      "ref": "when the sunlight strikes raindrops in the air",
+      "pred": "when the sunlight strikes raindrops in the air"
+    },
+    {
+      "ref": "e",
+      "pred": "e"
+    },
+    {
+      "ref": "b",
+      "pred": "b"
+    },
+    {
+      "ref": "p",
+      "pred": "p"
+    },
+    {
+      "ref": "the income itself was not grand by any standard",
+      "pred": "the income itself was not grand by any standard"
+    },
+    {
+      "ref": "small suitcase",
+      "pred": "small suitcase"
+    },
+    {
+      "ref": "s",
+      "pred": "s"
+    },
+    {
+      "ref": "i changed my mind at the last minute",
+      "pred": "i changed my mind at the last minute"
+    },
+    {
+      "ref": "i",
+      "pred": "i"
+    },
+    {
+      "ref": "f",
+      "pred": "f"
+    },
+    {
+      "ref": "",
+      "pred": ""
+    },
+    {
+      "ref": "post office",
+      "pred": "post office"
+    },
+    {
+      "ref": "within thirty seconds the army had landed",
+      "pred": "within thirty seconds the army had landed"
+    },
+    {
+      "ref": "need to know",
+      "pred": "need to know"
+    },
+    {
+      "ref": "q",
+      "pred": "q"
+    },
+    {
+      "ref": "eagle nest",
+      "pred": "eagle nest"
+    },
+    {
+      "ref": "c",
+      "pred": "c"
+    },
+    {
+      "ref": "l",
+      "pred": "l"
+    },
+    {
+      "ref": "w",
+      "pred": "w"
+    },
+    {
+      "ref": "m",
+      "pred": "m"
+    },
+    {
+      "ref": "y",
+      "pred": "y"
+    },
+    {
+      "ref": "l",
+      "pred": "l"
+    },
+    {
+      "ref": "s",
+      "pred": "s"
+    },
+    {
+      "ref": "h",
+      "pred": "h"
+    },
+    {
+      "ref": "e",
+      "pred": "e"
+    },
+    {
+      "ref": "no choice",
+      "pred": "no choice"
+    },
+    {
+      "ref": "f",
+      "pred": "f"
+    },
+    {
+      "ref": "y",
+      "pred": "y"
+    },
+    {
+      "ref": "y",
+      "pred": "y"
+    },
+    {
+      "ref": "d",
+      "pred": "d"
+    },
+    {
+      "ref": "x",
+      "pred": "x"
+    },
+    {
+      "ref": "l",
+      "pred": "l"
+    },
+    {
+      "ref": "a",
+      "pred": "a"
+    },
+    {
+      "ref": "just keep examining every low bid quoted for zinc etchings",
+      "pred": "just keep examining every low bid quoted for zinc etchings"
+    },
+    {
+      "ref": "f",
+      "pred": "f"
+    },
+    {
+      "ref": "time is money",
+      "pred": "time is money"
+    },
+    {
+      "ref": "p",
+      "pred": "p"
+    },
+    {
+      "ref": "l",
+      "pred": "l"
+    },
+    {
+      "ref": "m",
+      "pred": "m"
+    },
+    {
+      "ref": "z",
+      "pred": "z"
+    },
+    {
+      "ref": "o",
+      "pred": "o"
+    },
+    {
+      "ref": "what was the future of the human race",
+      "pred": "what was the future of the human race"
+    },
+    {
+      "ref": "z",
+      "pred": "z"
+    },
+    {
+      "ref": "g",
+      "pred": "g"
+    },
+    {
+      "ref": "j",
+      "pred": "j"
+    },
+    {
+      "ref": "but as often happened fate dealt out a different hand",
+      "pred": "but as often happened fate dealt out a different hand"
+    },
+    {
+      "ref": "w",
+      "pred": "w"
+    },
+    {
+      "ref": "t",
+      "pred": "t"
+    },
+    {
+      "ref": "o",
+      "pred": "o"
+    },
+    {
+      "ref": "yes he was medically qualified as well as being a biologist",
+      "pred": "yes he was medically qualified as well as being a biologist"
+    },
+    {
+      "ref": "o",
+      "pred": "o"
+    },
+    {
+      "ref": "n",
+      "pred": "n"
+    },
+    {
+      "ref": "a",
+      "pred": "a"
+    },
+    {
+      "ref": "u",
+      "pred": "u"
+    },
+    {
+      "ref": "r",
+      "pred": "r"
+    },
+    {
+      "ref": "u",
+      "pred": "u"
+    },
+    {
+      "ref": "f",
+      "pred": "f"
+    },
+    {
+      "ref": "e",
+      "pred": "e"
+    },
+    {
+      "ref": "n",
+      "pred": "n"
+    },
+    {
+      "ref": "why did i have to fall for a suicidal maniac",
+      "pred": "why did i have to fall for a suicidal maniac"
+    },
+    {
+      "ref": "a",
+      "pred": "a"
+    },
+    {
+      "ref": "x",
+      "pred": "x"
+    },
+    {
+      "ref": "g",
+      "pred": "g"
+    },
+    {
+      "ref": "a",
+      "pred": "a"
+    },
+    {
+      "ref": "q",
+      "pred": "q"
+    },
+    {
+      "ref": "z",
+      "pred": "z"
+    },
+    {
+      "ref": "t",
+      "pred": "t"
+    },
+    {
+      "ref": "keep in touch",
+      "pred": "keep in touch"
+    },
+    {
+      "ref": "z",
+      "pred": "z"
+    },
+    {
+      "ref": "n",
+      "pred": "n"
+    },
+    {
+      "ref": "r",
+      "pred": "r"
+    },
+    {
+      "ref": "see a doctor",
+      "pred": "see a doctor"
+    },
+    {
+      "ref": "n",
+      "pred": "n"
+    },
+    {
+      "ref": "while this is not closure at all it closes a chapter",
+      "pred": "while this ie not clesure at alls nat closes a chater"
+    },
+    {
+      "ref": "z",
+      "pred": "z"
+    },
+    {
+      "ref": "k",
+      "pred": "k"
+    },
+    {
+      "ref": "leave her alone",
+      "pred": "leave her alone"
+    },
+    {
+      "ref": "d",
+      "pred": "d"
+    },
+    {
+      "ref": "u",
+      "pred": "u"
+    },
+    {
+      "ref": "z",
+      "pred": "z"
+    },
+    {
+      "ref": "d",
+      "pred": "d"
+    },
+    {
+      "ref": "x",
+      "pred": "x"
+    },
+    {
+      "ref": "p",
+      "pred": "p"
+    },
+    {
+      "ref": "q",
+      "pred": "q"
+    },
+    {
+      "ref": "v",
+      "pred": "v"
+    },
+    {
+      "ref": "d",
+      "pred": "d"
+    },
+    {
+      "ref": "he felt anger and concern in equal measures",
+      "pred": "he felt anger and concern in equal measures"
+    },
+    {
+      "ref": "",
+      "pred": ""
+    },
+    {
+      "ref": "a bonfire blazed inside a small circle of stones",
+      "pred": "a bonfire blazed inside a small circle of stones"
+    },
+    {
+      "ref": "y",
+      "pred": "y"
+    },
+    {
+      "ref": "t",
+      "pred": "t"
+    },
+    {
+      "ref": "imagine all the people living life in peace",
+      "pred": "imagine all the people living life in peace"
+    },
+    {
+      "ref": "q",
+      "pred": "q"
+    },
+    {
+      "ref": "j",
+      "pred": "j"
+    },
+    {
+      "ref": "j",
+      "pred": "j"
+    },
+    {
+      "ref": "i guarantee youd come to the same conclusion sir",
+      "pred": "i guarantee youd come to the same conclusion sir"
+    },
+    {
+      "ref": "v",
+      "pred": "v"
+    },
+    {
+      "ref": "throw a party",
+      "pred": "throw a party"
+    },
+    {
+      "ref": "a",
+      "pred": "a"
+    },
+    {
+      "ref": "h",
+      "pred": "h"
+    },
+    {
+      "ref": "i",
+      "pred": "i"
+    },
+    {
+      "ref": "n",
+      "pred": "n"
+    },
+    {
+      "ref": "e",
+      "pred": "e"
+    },
+    {
+      "ref": "m",
+      "pred": "m"
+    },
+    {
+      "ref": "s",
+      "pred": "s"
+    },
+    {
+      "ref": "v",
+      "pred": "v"
+    },
+    {
+      "ref": "waxy and quivering the jocks fumbled the pizza",
+      "pred": "waxy and quivering the jocks fumbled the pizza"
+    },
+    {
+      "ref": "v",
+      "pred": "v"
+    },
+    {
+      "ref": "f",
+      "pred": "f"
+    },
+    {
+      "ref": "d",
+      "pred": "d"
+    },
+    {
+      "ref": "p",
+      "pred": "p"
+    },
+    {
+      "ref": "then i forgot about it as the carrots boiled over",
+      "pred": "then i forgot about it as the carrots boiled over"
+    },
+    {
+      "ref": "he was quick",
+      "pred": "he was quck"
+    },
+    {
+      "ref": "ramsay paused bowed mockingly to her and turned back",
+      "pred": "ramsay paused bowed mockingly to her and turned back"
+    },
+    {
+      "ref": "o",
+      "pred": "o"
+    },
+    {
+      "ref": "k",
+      "pred": "k"
+    },
+    {
+      "ref": "z",
+      "pred": "z"
+    },
+    {
+      "ref": "o",
+      "pred": "o"
+    },
+    {
+      "ref": "d",
+      "pred": "d"
+    },
+    {
+      "ref": "k",
+      "pred": "k"
+    },
+    {
+      "ref": "y",
+      "pred": "y"
+    },
+    {
+      "ref": "s",
+      "pred": "s"
+    },
+    {
+      "ref": "its going to be hard to say goodbye",
+      "pred": "its going to be hard to say goodbye"
+    },
+    {
+      "ref": "s",
+      "pred": "s"
+    },
+    {
+      "ref": "o",
+      "pred": "o"
+    },
+    {
+      "ref": "g",
+      "pred": "g"
+    },
+    {
+      "ref": "u",
+      "pred": "u"
+    },
+    {
+      "ref": "n",
+      "pred": "n"
+    },
+    {
+      "ref": "i",
+      "pred": "i"
+    },
+    {
+      "ref": "he walked briskly to the door then halted",
+      "pred": "he walked briskly to the door then halted"
+    },
+    {
+      "ref": "g",
+      "pred": "g"
+    },
+    {
+      "ref": "imagine a star with a mass ten times that of the sun",
+      "pred": "imagine a star with a mass ten times that of the sun"
+    },
+    {
+      "ref": "",
+      "pred": ""
+    },
+    {
+      "ref": "barry won the wave ski section despite thick fog",
+      "pred": "barry won the wave ski section despite thick fog"
+    },
+    {
+      "ref": "z",
+      "pred": "z"
+    },
+    {
+      "ref": "r",
+      "pred": "r"
+    },
+    {
+      "ref": "x",
+      "pred": "x"
+    },
+    {
+      "ref": "d",
+      "pred": "d"
+    },
+    {
+      "ref": "m",
+      "pred": "m"
+    },
+    {
+      "ref": "m",
+      "pred": "m"
+    },
+    {
+      "ref": "never mind ive got a few cans",
+      "pred": "never mind ive got a few cans"
+    },
+    {
+      "ref": "y",
+      "pred": "y"
+    },
+    {
+      "ref": "d",
+      "pred": "d"
+    },
+    {
+      "ref": "e",
+      "pred": "e"
+    },
+    {
+      "ref": "j",
+      "pred": "j"
+    },
+    {
+      "ref": "k",
+      "pred": "k"
+    },
+    {
+      "ref": "o",
+      "pred": "o"
+    },
+    {
+      "ref": "g",
+      "pred": "g"
+    },
+    {
+      "ref": "s",
+      "pred": "s"
+    },
+    {
+      "ref": "water bottle",
+      "pred": "water bottle"
+    },
+    {
+      "ref": "q",
+      "pred": "q"
+    },
+    {
+      "ref": "in fact they go a little bit past the start",
+      "pred": "in fact they go a little bit past the start"
+    },
+    {
+      "ref": "a",
+      "pred": "a"
+    },
+    {
+      "ref": "q",
+      "pred": "q"
+    },
+    {
+      "ref": "e",
+      "pred": "e"
+    },
+    {
+      "ref": "whats wrong",
+      "pred": "whats wrong"
+    },
+    {
+      "ref": "rio de janerio brazil",
+      "pred": "rio de janerio brazil"
+    }
+  ]
+}
