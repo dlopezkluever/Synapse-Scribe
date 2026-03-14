@@ -60,7 +60,7 @@ class TestModelInfoEndpoint:
         data = r.json()
         assert "parameter_count" in data
         assert data["parameter_count"] > 0
-        assert data["model_name"] == "gru_decoder"
+        assert data["model_name"] == "cnn_lstm"
         assert data["n_classes"] == 28
 
     @pytest.mark.parametrize("model_type", list(MODEL_CLASSES.keys()))
