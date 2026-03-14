@@ -36,10 +36,10 @@ if str(PROJECT_ROOT) not in sys.path:
 API_BASE = "http://localhost:8000"
 MODEL_OPTIONS = ["cnn_lstm", "gru_decoder", "transformer", "cnn_transformer"]
 MODEL_DISPLAY = {
-    "gru_decoder": "GRU Decoder (Willett-style)",
-    "cnn_lstm": "CNN + LSTM",
-    "transformer": "Transformer Encoder",
-    "cnn_transformer": "Hybrid CNN-Transformer",
+    "cnn_lstm": "CNN + LSTM — Best (0.43% CER)",
+    "cnn_transformer": "Hybrid CNN-Transformer (35.2% CER)",
+    "gru_decoder": "GRU Decoder — Failed (98.2% CER)",
+    "transformer": "Transformer — Failed (100% CER)",
 }
 
 # ---------------------------------------------------------------------------
@@ -167,6 +167,12 @@ def _local_decode(features: np.ndarray, model_type: str, beam_width: int, use_lm
 
     model.eval()
 
+    # Z-score normalize (must match training preprocessing)
+    norm_path = Path("outputs/normalization_stats.npz")
+    if norm_path.exists():
+        stats = np.load(norm_path)
+        features = (features.astype(np.float32) - stats["mean"]) / stats["std"]
+
     if features.ndim == 2:
         features = features[np.newaxis, ...]
 
@@ -211,14 +217,14 @@ def smart_decode(features, model_type, beam_width, use_lm):
 
 
 def smart_decode_demo(model_type, beam_width, use_lm):
-    """Try API demo endpoint first, fall back to local."""
+    """Try API demo endpoint first, fall back to local inference."""
     if api_available():
         return call_decode_demo(model_type, beam_width, use_lm)
     demo = _generate_demo_signal()
     return _local_decode(demo, model_type, beam_width, use_lm)
 
 
-def _generate_demo_signal(n_channels: int = 192, t_max: int = 2000) -> np.ndarray:
+def _generate_demo_signal(n_channels: int = 192, t_max: int = 5000) -> np.ndarray:
     """Load a real demo signal, falling back to synthetic if unavailable."""
     # Try loading real demo sample
     demo_path = Path("data/demo_sample.npy")
@@ -283,6 +289,11 @@ selected_model = st.sidebar.selectbox(
     MODEL_OPTIONS,
     format_func=lambda x: MODEL_DISPLAY[x],
 )
+if selected_model in ("gru_decoder", "transformer"):
+    st.sidebar.caption(
+        "This model did not converge during training and will produce poor results. "
+        "Use **CNN + LSTM** for accurate decoding."
+    )
 beam_width = st.sidebar.slider("Beam Width", 1, 100, 10)
 use_lm = st.sidebar.checkbox("Apply LM Rescoring", value=False)
 
