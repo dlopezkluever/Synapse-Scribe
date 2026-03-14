@@ -211,3 +211,16 @@ Language model: "helo" → "hello"
 
 Every phase in the task list builds one piece of this pipeline, starting from the bottom (data loading) and working up to the full system with a web demo. 
 
+
+
+ Files created/modified:
+
+  - scripts/build_char_lm.py — Builds character 5-gram LM from training text      
+  - scripts/run_beam_eval.py — Runs greedy + beam search + LM sweep with
+  comparison table
+  - src/decoding/lm_correction.py — Added CharNgramScorer (pure Python, no KenLM  
+  dependency)
+  - scripts/evaluate.py — Added --normalize, --filter-by-length, --lm-type flags  
+  - models/char_lm_5gram.json — The trained character LM (0.54 MB)
+  - outputs/results/cnn_lstm_beam_eval.json — Full results table
+  - outputs/results/cnn_lstm_beam_predictions.json — Per-trial predictions  
