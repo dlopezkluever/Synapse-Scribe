@@ -57,6 +57,492 @@ st.set_page_config(
 )
 
 # ---------------------------------------------------------------------------
+# Theme — industrial instrument aesthetic
+# ---------------------------------------------------------------------------
+
+st.markdown("""
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+    --bg-root: #0a0a0e;
+    --bg-surface: #111116;
+    --bg-elevated: #19191f;
+    --bg-input: #13131a;
+    --border-subtle: #1f1f28;
+    --border-default: #2a2a35;
+    --border-accent: #c9a84c;
+    --text-primary: #e8e6e3;
+    --text-secondary: #807e88;
+    --text-muted: #55535e;
+    --accent: #c9a84c;
+    --accent-hover: #d4b35c;
+    --accent-dim: #8a7434;
+    --accent-glow: rgba(201, 168, 76, 0.08);
+    --green-ok: #5b8c5a;
+    --red-err: #b54a4a;
+    --radius: 2px;
+    --transition-fast: 0.15s ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+    }
+}
+
+/* ── Global ─────────────────────────────────────── */
+html, body, [data-testid="stAppViewContainer"] {
+    background-color: var(--bg-root) !important;
+    color: var(--text-primary) !important;
+    font-family: 'DM Sans', system-ui, sans-serif !important;
+}
+.main .block-container {
+    padding-top: 2rem !important;
+    padding-bottom: 2rem !important;
+    max-width: 1200px !important;
+}
+
+/* ── Typography ─────────────────────────────────── */
+h1 {
+    font-weight: 700 !important;
+    font-size: 1.75rem !important;
+    letter-spacing: -0.02em !important;
+    color: var(--text-primary) !important;
+    border-bottom: 2px solid var(--border-accent) !important;
+    padding-bottom: 0.5rem !important;
+    margin-bottom: 1.5rem !important;
+}
+h2, [data-testid="stHeadingWithActionElements"] h2 {
+    font-weight: 600 !important;
+    font-size: 1.15rem !important;
+    letter-spacing: 0.04em !important;
+    text-transform: uppercase !important;
+    color: var(--text-secondary) !important;
+    margin-top: 2rem !important;
+    margin-bottom: 0.75rem !important;
+}
+h3 {
+    font-weight: 600 !important;
+    font-size: 1rem !important;
+    color: var(--text-primary) !important;
+}
+p, li, label, .stMarkdown {
+    font-family: 'DM Sans', system-ui, sans-serif !important;
+    color: var(--text-primary) !important;
+}
+/* Apply font to spans but not Streamlit's internal icon spans */
+span:not([data-testid]):not(.material-symbols-rounded):not(.material-icons) {
+    font-family: 'DM Sans', system-ui, sans-serif !important;
+}
+/* Hide raw icon text if Material Icons font fails to load */
+[data-testid="stSidebarCollapseButton"] span,
+[data-testid="collapsedControl"] span {
+    font-family: 'Material Symbols Rounded', 'Material Icons', sans-serif !important;
+    overflow: hidden !important;
+}
+code {
+    font-family: 'JetBrains Mono', monospace !important;
+    background: var(--bg-elevated) !important;
+    color: var(--accent) !important;
+    padding: 0.15em 0.4em !important;
+    border-radius: var(--radius) !important;
+    font-size: 0.88em !important;
+}
+
+/* ── Sidebar ────────────────────────────────────── */
+[data-testid="stSidebar"] {
+    background-color: var(--bg-surface) !important;
+    border-right: 1px solid var(--border-subtle) !important;
+}
+[data-testid="stSidebar"] .block-container {
+    padding-top: 1.5rem !important;
+}
+[data-testid="stSidebar"] h1 {
+    font-size: 1.25rem !important;
+    border-bottom: 1px solid var(--border-accent) !important;
+    padding-bottom: 0.4rem !important;
+    letter-spacing: 0.06em !important;
+    text-transform: uppercase !important;
+}
+[data-testid="stSidebar"] hr {
+    border-color: var(--border-subtle) !important;
+    margin: 0.75rem 0 !important;
+}
+/* Sidebar radio buttons — navigation */
+[data-testid="stSidebar"] [role="radiogroup"] {
+    gap: 2px !important;
+}
+[data-testid="stSidebar"] [role="radiogroup"] label {
+    background: transparent !important;
+    border: 1px solid transparent !important;
+    border-radius: var(--radius) !important;
+    padding: 0.4rem 0.6rem !important;
+    transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast) !important;
+    font-size: 0.9rem !important;
+}
+[data-testid="stSidebar"] [role="radiogroup"] label:hover {
+    background: var(--accent-glow) !important;
+    border-color: var(--border-subtle) !important;
+}
+[data-testid="stSidebar"] [role="radiogroup"] label[data-checked="true"],
+[data-testid="stSidebar"] [role="radiogroup"] label:has(input:checked) {
+    background: var(--accent-glow) !important;
+    border-left: 2px solid var(--border-accent) !important;
+    font-weight: 500 !important;
+}
+[data-testid="stSidebar"] .stSelectbox label,
+[data-testid="stSidebar"] .stSlider label,
+[data-testid="stSidebar"] .stCheckbox label {
+    font-size: 0.82rem !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.06em !important;
+    color: var(--text-muted) !important;
+    font-weight: 500 !important;
+}
+
+/* ── Inputs & Select ────────────────────────────── */
+[data-testid="stSelectbox"] > div > div,
+.stSelectbox > div > div {
+    background-color: var(--bg-input) !important;
+    border: 1px solid var(--border-default) !important;
+    border-radius: var(--radius) !important;
+    color: var(--text-primary) !important;
+}
+.stSlider [data-testid="stThumbValue"] {
+    color: var(--accent) !important;
+    font-family: 'JetBrains Mono', monospace !important;
+    font-weight: 500 !important;
+}
+.stSlider [data-baseweb="slider"] [role="slider"] {
+    background: var(--accent) !important;
+}
+.stSlider [data-baseweb="slider"] div[data-testid="stTickBar"] ~ div div {
+    background: var(--accent-dim) !important;
+}
+
+/* ── Buttons ────────────────────────────────────── */
+.stButton > button {
+    background: transparent !important;
+    border: 1px solid var(--border-default) !important;
+    color: var(--text-primary) !important;
+    border-radius: var(--radius) !important;
+    font-family: 'DM Sans', system-ui, sans-serif !important;
+    font-weight: 500 !important;
+    font-size: 0.88rem !important;
+    letter-spacing: 0.03em !important;
+    padding: 0.45rem 1.2rem !important;
+    transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast) !important;
+}
+.stButton > button:hover {
+    border-color: var(--accent) !important;
+    color: var(--accent) !important;
+    background: var(--accent-glow) !important;
+}
+.stButton > button:active {
+    background: rgba(201, 168, 76, 0.15) !important;
+    border-color: var(--accent) !important;
+}
+.stButton > button:focus-visible {
+    outline: 2px solid var(--accent) !important;
+    outline-offset: 2px !important;
+}
+.stButton > button[kind="primary"],
+.stButton > button[data-testid="stBaseButton-primary"] {
+    background: var(--accent) !important;
+    border-color: var(--accent) !important;
+    color: var(--bg-root) !important;
+    font-weight: 600 !important;
+}
+.stButton > button[kind="primary"]:hover,
+.stButton > button[data-testid="stBaseButton-primary"]:hover {
+    background: var(--accent-hover) !important;
+    border-color: var(--accent-hover) !important;
+    color: var(--bg-root) !important;
+}
+.stButton > button[kind="primary"]:active,
+.stButton > button[data-testid="stBaseButton-primary"]:active {
+    background: var(--accent-dim) !important;
+    border-color: var(--accent-dim) !important;
+}
+
+/* ── Metrics ────────────────────────────────────── */
+[data-testid="stMetric"] {
+    background: var(--bg-elevated) !important;
+    border: 1px solid var(--border-subtle) !important;
+    border-top: 2px solid var(--accent-dim) !important;
+    padding: 0.8rem 1rem !important;
+    border-radius: var(--radius) !important;
+}
+[data-testid="stMetricLabel"] {
+    font-size: 0.72rem !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.08em !important;
+    color: var(--text-muted) !important;
+    font-weight: 500 !important;
+}
+[data-testid="stMetricValue"] {
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 1.35rem !important;
+    font-weight: 500 !important;
+    color: var(--text-primary) !important;
+}
+
+/* ── Tabs ───────────────────────────────────────── */
+.stTabs [data-baseweb="tab-list"] {
+    gap: 0 !important;
+    border-bottom: 1px solid var(--border-default) !important;
+    background: transparent !important;
+}
+.stTabs [data-baseweb="tab"] {
+    background: transparent !important;
+    border: none !important;
+    border-bottom: 2px solid transparent !important;
+    color: var(--text-muted) !important;
+    font-size: 0.85rem !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.03em !important;
+    padding: 0.6rem 1.2rem !important;
+    text-transform: uppercase !important;
+    transition: color var(--transition-fast), border-color var(--transition-fast) !important;
+}
+.stTabs [data-baseweb="tab"]:hover {
+    color: var(--text-secondary) !important;
+}
+.stTabs [aria-selected="true"] {
+    border-bottom-color: var(--accent) !important;
+    color: var(--accent) !important;
+}
+.stTabs [data-baseweb="tab-panel"] {
+    padding-top: 1.25rem !important;
+}
+.stTabs [data-baseweb="tab-highlight"] {
+    background-color: var(--accent) !important;
+}
+
+/* ── Expanders ──────────────────────────────────── */
+[data-testid="stExpander"] {
+    background: var(--bg-surface) !important;
+    border: 1px solid var(--border-subtle) !important;
+    border-radius: var(--radius) !important;
+}
+[data-testid="stExpander"] summary {
+    font-size: 0.88rem !important;
+    font-weight: 500 !important;
+    color: var(--text-secondary) !important;
+    transition: color var(--transition-fast) !important;
+}
+[data-testid="stExpander"] summary:hover {
+    color: var(--accent) !important;
+}
+
+/* ── File uploader ──────────────────────────────── */
+[data-testid="stFileUploader"] {
+    background: var(--bg-surface) !important;
+    border: 1px dashed var(--border-default) !important;
+    border-radius: var(--radius) !important;
+    padding: 1rem !important;
+    transition: border-color var(--transition-fast) !important;
+}
+[data-testid="stFileUploader"]:hover {
+    border-color: var(--accent-dim) !important;
+}
+
+/* ── Alerts / Info / Success / Warning ──────────── */
+[data-testid="stAlert"] {
+    border-radius: var(--radius) !important;
+    font-size: 0.88rem !important;
+}
+.stAlert [data-testid="stMarkdownContainer"] p {
+    font-size: 0.88rem !important;
+}
+
+/* ── Captions ───────────────────────────────────── */
+.stCaption, [data-testid="stCaptionContainer"] {
+    color: var(--text-muted) !important;
+    font-size: 0.78rem !important;
+}
+
+/* ── Dataframe ──────────────────────────────────── */
+[data-testid="stDataFrame"] {
+    border: 1px solid var(--border-subtle) !important;
+    border-radius: var(--radius) !important;
+}
+
+/* ── Checkbox ───────────────────────────────────── */
+[data-testid="stCheckbox"] span[data-testid="stCheckbox-label"] {
+    color: var(--text-primary) !important;
+}
+
+/* ── Multiselect ────────────────────────────────── */
+.stMultiSelect [data-baseweb="tag"] {
+    background: var(--accent-glow) !important;
+    border: 1px solid var(--accent-dim) !important;
+    border-radius: var(--radius) !important;
+    color: var(--text-primary) !important;
+}
+
+/* ── Divider ────────────────────────────────────── */
+hr {
+    border-color: var(--border-subtle) !important;
+}
+
+/* ── Plotly chart container — DO NOT touch internals */
+[data-testid="stPlotlyChart"] {
+    border: 1px solid var(--border-subtle) !important;
+    border-radius: var(--radius) !important;
+    padding: 0.25rem !important;
+    background: var(--bg-surface) !important;
+}
+
+/* ── Progress bar ───────────────────────────────── */
+.stProgress > div > div {
+    background-color: var(--accent) !important;
+}
+
+/* ── Spinner ────────────────────────────────────── */
+.stSpinner > div {
+    border-top-color: var(--accent) !important;
+}
+
+/* ── Scrollbar ──────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-root); }
+::-webkit-scrollbar-thumb { background: var(--border-default); border-radius: var(--radius); }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+/* ── Custom component classes ───────────────────── */
+.ss-result-box {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.15rem;
+    padding: 1rem 1.25rem;
+    background: var(--bg-elevated);
+    border-left: 3px solid var(--accent);
+    border-top: 1px solid var(--border-subtle);
+    border-right: 1px solid var(--border-subtle);
+    border-bottom: 1px solid var(--border-subtle);
+    margin: 0.5rem 0 1rem 0;
+    color: var(--text-primary);
+    letter-spacing: 0.02em;
+    line-height: 1.6;
+}
+.ss-status-badge {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.6rem;
+    border-radius: var(--radius);
+}
+.ss-status-online {
+    background: rgba(91, 140, 90, 0.15);
+    color: #7db87c;
+    border: 1px solid rgba(91, 140, 90, 0.3);
+}
+.ss-status-offline {
+    background: rgba(181, 74, 74, 0.12);
+    color: #c47a7a;
+    border: 1px solid rgba(181, 74, 74, 0.25);
+}
+.ss-comparison-row {
+    padding: 0.75rem 1rem;
+    margin: 0.35rem 0;
+    background: var(--bg-elevated);
+    border-left: 2px solid var(--border-default);
+    border-top: 1px solid var(--border-subtle);
+    border-right: 1px solid var(--border-subtle);
+    border-bottom: 1px solid var(--border-subtle);
+    font-size: 0.92rem;
+}
+.ss-comparison-row.ss-best {
+    border-left-color: var(--accent);
+    background: var(--accent-glow);
+}
+.ss-comparison-label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    margin-bottom: 0.2rem;
+}
+.ss-comparison-text {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text-primary);
+    font-size: 0.92rem;
+}
+.ss-empty-state {
+    text-align: left;
+    padding: 2.5rem 1.5rem;
+    border: 1px dashed var(--border-default);
+    margin: 1rem 0;
+    background: var(--bg-surface);
+}
+.ss-empty-state .ss-empty-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.4rem;
+}
+.ss-empty-state .ss-empty-desc {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+.ss-settings-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 0.35rem 0;
+    font-size: 0.85rem;
+    border-bottom: 1px solid var(--border-subtle);
+}
+.ss-settings-key {
+    color: var(--text-muted);
+    text-transform: uppercase;
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    padding-top: 0.1rem;
+}
+.ss-settings-val {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text-primary);
+    font-size: 0.82rem;
+}
+.ss-hypothesis {
+    padding: 0.6rem 1rem;
+    margin: 0.25rem 0;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-subtle);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.ss-hypothesis:first-child {
+    border-left: 2px solid var(--accent);
+}
+.ss-hyp-rank {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    min-width: 2rem;
+}
+.ss-hyp-text {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text-primary);
+    flex: 1;
+    margin: 0 1rem;
+}
+.ss-hyp-score {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem;
+    color: var(--accent-dim);
+}
+</style>
+""", unsafe_allow_html=True)
+
+# ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
 
@@ -261,13 +747,17 @@ def _generate_demo_signal(n_channels: int = 192, t_max: int = 5000) -> np.ndarra
 # ===================================================================
 
 st.sidebar.title("Synapse Scribe")
-st.sidebar.markdown("Neural signal decoding demo")
 
-# API status
+# API status badge
 api_status = api_available()
+_status_class = "ss-status-online" if api_status else "ss-status-offline"
+_status_label = "api connected" if api_status else "local mode"
 st.sidebar.markdown(
-    f"**API Status:** {'Connected' if api_status else 'Offline (local mode)'}"
+    f'<span class="ss-status-badge {_status_class}">{_status_label}</span>',
+    unsafe_allow_html=True,
 )
+
+st.sidebar.markdown("---")
 
 # Navigation
 page = st.sidebar.radio(
@@ -283,19 +773,18 @@ page = st.sidebar.radio(
 
 # Model settings
 st.sidebar.markdown("---")
-st.sidebar.subheader("Model Settings")
+st.sidebar.subheader("Model")
 selected_model = st.sidebar.selectbox(
-    "Model Architecture",
+    "Architecture",
     MODEL_OPTIONS,
     format_func=lambda x: MODEL_DISPLAY[x],
 )
 if selected_model in ("gru_decoder", "transformer"):
     st.sidebar.caption(
-        "This model did not converge during training and will produce poor results. "
-        "Use **CNN + LSTM** for accurate decoding."
+        "Did not converge during training. Use **CNN + LSTM** for accurate decoding."
     )
 beam_width = st.sidebar.slider("Beam Width", 1, 100, 10)
-use_lm = st.sidebar.checkbox("Apply LM Rescoring", value=False)
+use_lm = st.sidebar.checkbox("LM Rescoring", value=False)
 
 
 # ===================================================================
@@ -304,28 +793,34 @@ use_lm = st.sidebar.checkbox("Apply LM Rescoring", value=False)
 
 def page_upload_decode():
     st.header("Upload & Decode")
-    st.markdown("Upload a `.npy` neural recording or try a demo sample.")
 
-    col1, col2 = st.columns([2, 1])
+    col1, col2 = st.columns([5, 2])
 
     with col1:
         uploaded = st.file_uploader(
-            "Upload neural recording (.npy)",
+            "Neural recording (.npy)",
             type=["npy"],
             help="NumPy array with shape [T, C] (timesteps x channels)",
         )
 
-        col_btn1, col_btn2 = st.columns(2)
+        col_btn1, col_btn2, _ = st.columns([1, 1, 2])
         with col_btn1:
             decode_btn = st.button("Decode", type="primary", disabled=uploaded is None)
         with col_btn2:
             demo_btn = st.button("Try Demo")
 
     with col2:
-        st.markdown("**Settings**")
-        st.markdown(f"- Model: **{MODEL_DISPLAY[selected_model]}**")
-        st.markdown(f"- Beam width: **{beam_width}**")
-        st.markdown(f"- LM rescoring: **{'Yes' if use_lm else 'No'}**")
+        st.markdown(
+            f'<div style="padding: 0.75rem 0;">'
+            f'<div class="ss-settings-row"><span class="ss-settings-key">Model</span>'
+            f'<span class="ss-settings-val">{selected_model}</span></div>'
+            f'<div class="ss-settings-row"><span class="ss-settings-key">Beam width</span>'
+            f'<span class="ss-settings-val">{beam_width}</span></div>'
+            f'<div class="ss-settings-row"><span class="ss-settings-key">LM rescore</span>'
+            f'<span class="ss-settings-val">{"on" if use_lm else "off"}</span></div>'
+            f'</div>',
+            unsafe_allow_html=True,
+        )
 
     # Run decoding
     result = None
@@ -347,14 +842,10 @@ def page_upload_decode():
         st.session_state["last_result"] = result
         st.session_state["last_features"] = features_data
 
-        st.success("Decoding complete!")
-
-        # Results display
         st.subheader("Predicted Text")
         st.markdown(
-            f'<div style="font-size: 24px; padding: 16px; background: #1a1a2e; '
-            f'border-radius: 8px; border-left: 4px solid #00d2ff;">'
-            f'{result["predicted_text"] or "(empty)"}</div>',
+            f'<div class="ss-result-box">'
+            f'{result["predicted_text"] or "<span style=\'color:var(--text-muted)\'>(no output)</span>"}</div>',
             unsafe_allow_html=True,
         )
 
@@ -368,20 +859,31 @@ def page_upload_decode():
             st.metric("Hypotheses", len(result["beam_hypotheses"]))
 
         # Raw CTC output
-        with st.expander("Raw CTC Output (Greedy)"):
+        with st.expander("Raw CTC output (greedy)"):
             st.code(result["raw_ctc_output"] or "(empty)")
 
         # Beam hypotheses
-        with st.expander("Beam Search Hypotheses"):
+        with st.expander("Beam search hypotheses"):
+            hyp_html = ""
             for i, h in enumerate(result["beam_hypotheses"]):
-                st.markdown(f"**#{i+1}** (score: {h['score']:.4f}): `{h['text']}`")
+                hyp_html += (
+                    f'<div class="ss-hypothesis">'
+                    f'<span class="ss-hyp-rank">#{i+1}</span>'
+                    f'<span class="ss-hyp-text">{h["text"] or "(empty)"}</span>'
+                    f'<span class="ss-hyp-score">{h["score"]:.4f}</span>'
+                    f'</div>'
+                )
+            st.markdown(hyp_html, unsafe_allow_html=True)
 
     # Show data from session state if available
     elif "last_result" in st.session_state:
         result = st.session_state["last_result"]
-        st.info("Showing previous result. Upload a new file or click Demo to decode again.")
-        st.subheader("Previous Result")
-        st.code(result["predicted_text"] or "(empty)")
+        st.info("Showing previous result. Upload new data or click Demo to decode again.")
+        st.markdown(
+            f'<div class="ss-result-box" style="border-left-color: var(--text-muted);">'
+            f'{result["predicted_text"] or "(no output)"}</div>',
+            unsafe_allow_html=True,
+        )
 
 
 # ===================================================================
@@ -389,11 +891,10 @@ def page_upload_decode():
 # ===================================================================
 
 def page_signal_viewer():
-    st.header("Signal Viewer & Diagnostics")
+    st.header("Signal Viewer")
 
     features = st.session_state.get("last_features")
     if features is None:
-        # Let user upload here too
         uploaded = st.file_uploader("Upload .npy to view", type=["npy"], key="sig_upload")
         if uploaded:
             features = np.load(io.BytesIO(uploaded.read()))
@@ -401,16 +902,29 @@ def page_signal_viewer():
                 features = features[0]
             st.session_state["last_features"] = features
         else:
-            # Generate demo
-            if st.button("Load Demo Signal"):
-                features = _generate_demo_signal()
-                st.session_state["last_features"] = features
-            else:
-                st.info("Upload a signal or click 'Load Demo Signal' to explore.")
+            col_e1, col_e2 = st.columns([3, 1])
+            with col_e1:
+                st.markdown(
+                    '<div class="ss-empty-state">'
+                    '<div class="ss-empty-title">No signal loaded</div>'
+                    '<div class="ss-empty-desc">Upload a .npy recording above, or load a '
+                    'demo signal to explore channels, heatmaps, quality diagnostics, and '
+                    'power spectra.</div></div>',
+                    unsafe_allow_html=True,
+                )
+            with col_e2:
+                if st.button("Load Demo Signal"):
+                    features = _generate_demo_signal()
+                    st.session_state["last_features"] = features
+            if features is None:
                 return
 
     T, C = features.shape
-    st.markdown(f"**Signal shape:** {T} timesteps x {C} channels")
+    st.markdown(
+        f'<span style="font-family:\'JetBrains Mono\',monospace; font-size:0.82rem; '
+        f'color:var(--text-muted);">{T} timesteps &times; {C} channels</span>',
+        unsafe_allow_html=True,
+    )
 
     # Channel selector
     st.sidebar.markdown("---")
@@ -577,7 +1091,13 @@ def page_decoding_viz():
 
     result = st.session_state.get("last_result")
     if result is None:
-        st.info("Run a decode first (Upload & Decode page) to visualize results.")
+        st.markdown(
+            '<div class="ss-empty-state">'
+            '<div class="ss-empty-title">No decode results yet</div>'
+            '<div class="ss-empty-desc">Run a decode on the Upload & Decode page to see '
+            'CTC heatmaps, beam hypotheses, and method comparisons here.</div></div>',
+            unsafe_allow_html=True,
+        )
         if st.button("Run Demo Decode"):
             features = _generate_demo_signal()
             result = smart_decode_demo(selected_model, beam_width, use_lm)
@@ -639,12 +1159,20 @@ def page_decoding_viz():
             # Display as a timeline
             non_blank = [(t, c, p) for t, c, p in predicted_chars if c != "_"]
             if non_blank:
-                timeline_text = ""
+                timeline_text = '<div style="font-family:\'JetBrains Mono\',monospace; line-height:1.8; letter-spacing:0.05em;">'
                 for t, c, p in non_blank:
-                    color = f"rgb({int(255*(1-p))}, {int(255*p)}, 0)"
-                    timeline_text += f'<span style="color: {color}; font-size: 28px;" title="t={t}, p={p:.3f}">{c}</span>'
+                    # Amber (accent) for high confidence, muted for low
+                    r = int(85 + 116 * p)  # 55 -> c9
+                    g = int(83 + 85 * p)   # 53 -> a8
+                    b = int(94 - 18 * p)   # 5e -> 4c
+                    opacity = 0.45 + 0.55 * p
+                    timeline_text += (
+                        f'<span style="color:rgb({r},{g},{b}); opacity:{opacity:.2f}; '
+                        f'font-size:1.35rem;" title="t={t}, p={p:.3f}">{c}</span>'
+                    )
+                timeline_text += '</div>'
                 st.markdown(timeline_text, unsafe_allow_html=True)
-                st.caption("Character colors: green = high confidence, red = low confidence")
+                st.caption("Brighter = higher confidence")
         else:
             st.warning("No character probabilities available.")
 
@@ -653,19 +1181,23 @@ def page_decoding_viz():
         hypotheses = result.get("beam_hypotheses", [])
         if hypotheses:
             st.subheader("Ranked Hypotheses")
+            hyp_html = ""
             for i, h in enumerate(hypotheses):
-                score = h["score"]
-                text = h["text"] or "(empty)"
-                # Bar visualization of score
-                col1, col2 = st.columns([3, 1])
-                with col1:
-                    st.markdown(f"**#{i+1}:** `{text}`")
-                with col2:
-                    st.markdown(f"Score: **{score:.4f}**")
-                if i < len(hypotheses) - 1:
-                    st.divider()
+                hyp_html += (
+                    f'<div class="ss-hypothesis">'
+                    f'<span class="ss-hyp-rank">#{i+1}</span>'
+                    f'<span class="ss-hyp-text">{h["text"] or "(empty)"}</span>'
+                    f'<span class="ss-hyp-score">{h["score"]:.4f}</span>'
+                    f'</div>'
+                )
+            st.markdown(hyp_html, unsafe_allow_html=True)
         else:
-            st.warning("No beam hypotheses available.")
+            st.markdown(
+                '<div class="ss-empty-state">'
+                '<div class="ss-empty-title">No hypotheses</div>'
+                '<div class="ss-empty-desc">Beam search did not produce any hypotheses for this input.</div></div>',
+                unsafe_allow_html=True,
+            )
 
     # Tab 3: Decoding comparison
     with tab3:
@@ -681,10 +1213,11 @@ def page_decoding_viz():
         }
 
         for i, (method, output) in enumerate(zip(comp_data["Method"], comp_data["Output"])):
+            best = " ss-best" if i == len(comp_data["Method"]) - 1 else ""
             st.markdown(
-                f'<div style="padding: 12px; margin: 8px 0; background: #1a1a2e; '
-                f'border-radius: 6px; border-left: 3px solid {"#00d2ff" if i == 2 else "#444"};">'
-                f'<strong>{method}:</strong> <code>{output}</code></div>',
+                f'<div class="ss-comparison-row{best}">'
+                f'<div class="ss-comparison-label">{method}</div>'
+                f'<div class="ss-comparison-text">{output}</div></div>',
                 unsafe_allow_html=True,
             )
 
@@ -694,9 +1227,8 @@ def page_decoding_viz():
 # ===================================================================
 
 def page_benchmarks():
-    st.header("Model Benchmarks & Comparison")
+    st.header("Benchmarks")
 
-    # Model info cards
     st.subheader("Model Architectures")
 
     cols = st.columns(len(MODEL_OPTIONS))
@@ -750,7 +1282,13 @@ def page_benchmarks():
             df = pd.DataFrame(all_results)
             st.dataframe(df, use_container_width=True)
     else:
-        st.info("No saved benchmark results found. Run evaluations to populate this table.")
+        st.markdown(
+            '<div class="ss-empty-state">'
+            '<div class="ss-empty-title">No benchmark results saved</div>'
+            '<div class="ss-empty-desc">Run evaluations to populate this table, or use '
+            'the quick benchmark below to compare models on a demo signal.</div></div>',
+            unsafe_allow_html=True,
+        )
 
         # Show placeholder comparison
         st.markdown("**Expected architecture comparison (from task list):**")
@@ -819,7 +1357,7 @@ def page_benchmarks():
 # ===================================================================
 
 def page_neural_representations():
-    st.header("Neural Representation Explorer")
+    st.header("Neural Representations")
 
     tab1, tab2, tab3, tab4 = st.tabs([
         "Embedding Scatter", "Neural Trajectories",
@@ -870,9 +1408,13 @@ def page_neural_representations():
             else:
                 st.warning("No embeddings found in file.")
         else:
-            st.info("No saved embeddings found. Generate embeddings to explore.")
-
-            # Offer to generate from a model
+            st.markdown(
+                '<div class="ss-empty-state">'
+                '<div class="ss-empty-title">No embeddings saved</div>'
+                '<div class="ss-empty-desc">Generate embeddings from a model to explore '
+                'learned representations with PCA or t-SNE projections.</div></div>',
+                unsafe_allow_html=True,
+            )
             if st.button("Generate Demo Embeddings"):
                 with st.spinner("Generating embeddings from demo data..."):
                     _generate_demo_embeddings()
@@ -955,7 +1497,13 @@ def page_neural_representations():
             except Exception as e:
                 st.warning(f"Trajectory visualization error: {e}")
         else:
-            st.info("Load a signal (Upload & Decode or Signal Viewer) to visualize trajectories.")
+            st.markdown(
+                '<div class="ss-empty-state">'
+                '<div class="ss-empty-title">No signal loaded</div>'
+                '<div class="ss-empty-desc">Load a recording on the Upload & Decode or '
+                'Signal Viewer page to visualize hidden-state trajectories in 3D.</div></div>',
+                unsafe_allow_html=True,
+            )
 
     # Tab 3: Electrode importance
     with tab3:
@@ -1027,7 +1575,13 @@ def page_neural_representations():
                     except Exception as e:
                         st.error(f"Attribution failed: {e}")
         else:
-            st.info("Load a signal first to compute electrode importance.")
+            st.markdown(
+                '<div class="ss-empty-state">'
+                '<div class="ss-empty-title">No signal loaded</div>'
+                '<div class="ss-empty-desc">Load a recording first to compute gradient '
+                'attribution and electrode importance maps.</div></div>',
+                unsafe_allow_html=True,
+            )
 
     # Tab 4: Trial similarity
     with tab4:
@@ -1087,7 +1641,13 @@ def page_neural_representations():
 
                 st.plotly_chart(fig, use_container_width=True)
         else:
-            st.info("No saved embeddings found for similarity analysis.")
+            st.markdown(
+                '<div class="ss-empty-state">'
+                '<div class="ss-empty-title">No embeddings for similarity</div>'
+                '<div class="ss-empty-desc">Generate or load embeddings to visualize '
+                'trial-level and class-averaged cosine similarity matrices.</div></div>',
+                unsafe_allow_html=True,
+            )
 
 
 def _generate_demo_embeddings():
