@@ -67,7 +67,19 @@ python scripts/train.py --model cnn_transformer --epochs 150
 ### Evaluate
 
 ```bash
-python scripts/evaluate.py --checkpoint outputs/checkpoints/GRUDecoder_best.pt --model gru_decoder
+# Greedy decoding
+python scripts/evaluate.py --checkpoint outputs/checkpoints/GPU-3-13/CNNLSTM_best.pt \
+    --model cnn_lstm --t-max 5000 --normalize --filter-by-length
+
+# Beam search + LM rescoring
+python scripts/evaluate.py --checkpoint outputs/checkpoints/GPU-3-13/CNNLSTM_best.pt \
+    --model cnn_lstm --t-max 5000 --normalize --filter-by-length \
+    --beam-width 5 --use-lm --lm-path models/char_lm_5gram.json \
+    --lm-type char_ngram --lm-alpha 0.5 --lm-beta 1.0
+
+# Full decoding sweep (greedy + beam + beam+LM comparison table)
+python scripts/run_beam_eval.py --checkpoint outputs/checkpoints/GPU-3-13/CNNLSTM_best.pt \
+    --model cnn_lstm --t-max 5000 --normalize --filter-by-length
 ```
 
 ### Run the Demo
@@ -143,6 +155,31 @@ BCI-2/
 
 All models output CTC logits over 28 classes (blank + a-z + space).
 
+## Results
+
+Trained on the Willett Handwriting dataset (3,868 trials, 192 channels) using a T4 GPU. The CNN-LSTM model was evaluated on the held-out test set (388 samples) across three decoding strategies.
+
+### CNN-LSTM Test Set Performance
+
+| Decoding Method | CER | WER | Exact Match |
+|---|---|---|---|
+| Greedy | 0.57% | 2.00% | 97.7% |
+| Beam Search (width=5) | 0.57% | 2.00% | 97.7% |
+| Beam Search (w=5) + Char 5-gram LM | **0.43%** | **1.50%** | **98.2%** |
+
+LM rescoring reduced CER by 25% relative to greedy, correcting 2 additional character errors (9 → 7 out of 388 samples).
+
+### All Architectures (Validation CER)
+
+| Model | Params | Best Val CER | Status |
+|---|---|---|---|
+| **CNN-LSTM** | 10.7M | **4.2%** | Converged |
+| CNN-Transformer | 13.3M | 35.2% | Partial convergence |
+| GRU Decoder | 4.9M | 98.2% | Did not converge |
+| Transformer | 20.7M | 100% | Did not converge |
+
+Training details and epoch-by-epoch analysis: [`._docs/training-report.md`](._docs/training-report.md)
+
 ## Datasets
 
 ### Willett Handwriting (primary)
@@ -185,6 +222,10 @@ All parameters are defined in a single `Config` dataclass in `src/config.py`. Co
 4. **Explicit overrides** -- passed programmatically via `load_config(overrides={...})`
 
 Key parameters include model type, preprocessing bands, training hyperparameters, augmentation settings, and output paths. Run `python -c "from src.config import Config; help(Config)"` to see all fields.
+
+## Further Development
+
+See [`._docs/For-further-dev.md`](._docs/for-further-dev.md) for a full analysis of current system status, model improvement actions, and larger projects that build on this foundation (real-time streaming, cross-subject transfer learning, speech BCI, edge deployment, and more).
 
 ## License
 
