@@ -72,6 +72,14 @@ MODEL_CLASSES = {
     "cnn_transformer": CNNTransformer,
 }
 
+# Map model type keys to actual checkpoint filenames (class names used during training)
+_CHECKPOINT_NAMES = {
+    "gru_decoder": "GRUDecoder_best.pt",
+    "cnn_lstm": "CNNLSTM_best.pt",
+    "transformer": "TransformerDecoder_best.pt",
+    "cnn_transformer": "CNNTransformer_best.pt",
+}
+
 # Global state
 _models: dict[str, torch.nn.Module] = {}
 _config: Optional[Config] = None
@@ -131,7 +139,11 @@ def _get_model(model_type: str) -> torch.nn.Module:
     """Get a loaded model by type, loading on first access."""
     if model_type not in _models:
         checkpoint_dir = Path(_config.checkpoint_dir if _config else "./outputs/checkpoints")
-        checkpoint_path = checkpoint_dir / f"{model_type}_best.pt"
+        ckpt_name = _CHECKPOINT_NAMES.get(model_type, f"{model_type}_best.pt")
+        # Prefer GPU-trained checkpoints, fall back to base directory
+        gpu_path = checkpoint_dir / "GPU-3-13" / ckpt_name
+        base_path = checkpoint_dir / ckpt_name
+        checkpoint_path = gpu_path if gpu_path.exists() else base_path
         _models[model_type] = _load_model(model_type, checkpoint_path)
     return _models[model_type]
 
@@ -248,10 +260,10 @@ async def lifespan(application: FastAPI):
 
     # Pre-load the default model
     try:
-        _get_model("gru_decoder")
-        logger.info("Pre-loaded gru_decoder model")
+        _get_model("cnn_lstm")
+        logger.info("Pre-loaded cnn_lstm model")
     except Exception as e:
-        logger.warning("Could not pre-load gru_decoder: %s", e)
+        logger.warning("Could not pre-load cnn_lstm: %s", e)
 
     # Load LM scorer
     lm_path = Path("outputs/lm/char_5gram.binary")
@@ -265,7 +277,7 @@ async def lifespan(application: FastAPI):
 
 
 app = FastAPI(
-    title="Brain-Text Decoder API",
+    title="Synapse Scribe API",
     description="Neural signal to text decoding with CTC-trained models",
     version="1.0.0",
     lifespan=lifespan,
@@ -291,7 +303,7 @@ async def health():
 
 @app.get("/model/info", response_model=ModelInfoResponse)
 async def model_info(
-    model: str = Query("gru_decoder", description="Model type to query"),
+    model: str = Query("cnn_lstm", description="Model type to query"),
 ):
     """Return model architecture info and parameter count."""
     if model not in MODEL_CLASSES:
@@ -314,7 +326,7 @@ async def model_info(
 @app.post("/decode", response_model=DecodeResponse)
 async def decode(
     file: UploadFile = File(..., description="NumPy .npy file with neural features"),
-    model: str = Query("gru_decoder", description="Model type"),
+    model: str = Query("cnn_lstm", description="Model type"),
     beam_width: int = Query(10, ge=1, le=200, description="Beam search width"),
     use_lm: bool = Query(False, description="Apply LM rescoring"),
 ):
@@ -355,7 +367,7 @@ async def decode(
 
 @app.get("/decode/demo", response_model=DecodeResponse)
 async def decode_demo(
-    model: str = Query("gru_decoder", description="Model type"),
+    model: str = Query("cnn_lstm", description="Model type"),
     beam_width: int = Query(10, ge=1, le=200, description="Beam search width"),
     use_lm: bool = Query(False, description="Apply LM rescoring"),
 ):
