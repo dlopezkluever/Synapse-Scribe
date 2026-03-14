@@ -64,6 +64,10 @@ def parse_args() -> argparse.Namespace:
                         help="Evaluation batch size (default: 16)")
     parser.add_argument("--t-max", type=int, default=2000,
                         help="Maximum time steps per trial (default: 2000)")
+    parser.add_argument("--normalize", action="store_true",
+                        help="Z-score normalize per channel (must match training)")
+    parser.add_argument("--filter-by-length", action="store_true",
+                        help="Drop trials longer than t-max")
     parser.add_argument("--results-dir", type=str, default="./outputs/results",
                         help="Directory to save results (default: ./outputs/results)")
     parser.add_argument("--config", type=str, default=None,
@@ -82,6 +86,9 @@ def parse_args() -> argparse.Namespace:
                         help="LM interpolation weight (default: 0.5)")
     parser.add_argument("--lm-beta", type=float, default=0.0,
                         help="Word insertion bonus (default: 0.0)")
+    parser.add_argument("--lm-type", type=str, default="char_ngram",
+                        choices=["kenlm", "char_ngram", "gpt2"],
+                        help="LM scorer type (default: char_ngram)")
 
     # Output format
     parser.add_argument("--output-format", type=str, default="csv",
@@ -220,9 +227,26 @@ def main() -> None:
     # Load dataset
     from src.data.loader import load_willett_dataset
     trial_index = load_willett_dataset(cfg)
-    _, _, test_df = split_trial_index(trial_index, cfg.split_ratios)
 
-    test_ds = NeuralTrialDataset(test_df, t_max=args.t_max)
+    # Filter by length if requested (must match training)
+    if args.filter_by_length and "n_timesteps" in trial_index.columns:
+        before = len(trial_index)
+        trial_index = trial_index[trial_index["n_timesteps"] <= args.t_max].reset_index(drop=True)
+        logger.info("Length filter (t_max=%d): %d -> %d trials", args.t_max, before, len(trial_index))
+
+    train_df, _, test_df = split_trial_index(trial_index, cfg.split_ratios)
+
+    # Build train dataset to get normalization stats, then test dataset
+    if args.normalize:
+        train_ds = NeuralTrialDataset(train_df, t_max=args.t_max, normalize=True)
+        test_ds = NeuralTrialDataset(
+            test_df, t_max=args.t_max, normalize=True,
+            channel_mean=train_ds.channel_mean, channel_std=train_ds.channel_std,
+        )
+        logger.info("Using per-channel z-score normalization (from training set stats)")
+    else:
+        test_ds = NeuralTrialDataset(test_df, t_max=args.t_max)
+
     test_loader = DataLoader(
         test_ds, batch_size=args.batch_size, shuffle=False, collate_fn=ctc_collate_fn
     )
@@ -242,7 +266,7 @@ def main() -> None:
         if args.beam_width <= 0:
             logger.warning("--use-lm requires --beam-width > 0; falling back to greedy decoding")
         elif args.lm_path:
-            lm_scorer = load_lm_scorer(args.lm_path)
+            lm_scorer = load_lm_scorer(args.lm_path, scorer_type=args.lm_type)
             if lm_scorer is not None:
                 logger.info("Loaded LM scorer from %s", args.lm_path)
             else:
