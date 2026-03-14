@@ -85,6 +85,8 @@ _models: dict[str, torch.nn.Module] = {}
 _config: Optional[Config] = None
 _lm_scorer = None
 _demo_sample: Optional[np.ndarray] = None
+_norm_mean: Optional[np.ndarray] = None  # [C] channel means for z-score
+_norm_std: Optional[np.ndarray] = None   # [C] channel stds for z-score
 
 
 def _load_model(model_type: str, checkpoint_path: Optional[Path] = None) -> torch.nn.Module:
@@ -157,6 +159,18 @@ def _run_inference(
     """Run full decode pipeline on a numpy feature array."""
     model = _get_model(model_type)
 
+    # Z-score normalize (must match training preprocessing)
+    if _norm_mean is not None and _norm_std is not None:
+        features = (features.astype(np.float32) - _norm_mean) / _norm_std
+
+    # Cap sequence length for models with positional encoding limits
+    pe = getattr(model, "pos_enc", None)
+    if pe is not None and hasattr(pe, "pe"):
+        ds = getattr(model, "downsample_factor", 1)
+        max_input = pe.pe.shape[1] * ds
+        if features.shape[0] > max_input:
+            features = features[:max_input]
+
     # Prepare input
     if features.ndim == 2:
         features = features[np.newaxis, ...]  # [1, T, C]
@@ -205,13 +219,13 @@ def _run_inference(
     )
 
 
-def _generate_demo_sample(n_channels: int = 192, t_max: int = 2000) -> np.ndarray:
+def _generate_demo_sample(n_channels: int = 192, t_max: int = 5000) -> np.ndarray:
     """Generate or load a demo sample for the /decode/demo endpoint.
 
     When called with non-default arguments, always generates a synthetic signal
     (used by tests). When called with defaults, tries to load real data first.
     """
-    use_defaults = (n_channels == 192 and t_max == 2000)
+    use_defaults = (n_channels == 192 and t_max == 5000)
 
     if use_defaults:
         # Check for saved demo sample
@@ -249,8 +263,8 @@ def _generate_demo_sample(n_channels: int = 192, t_max: int = 2000) -> np.ndarra
 
 @asynccontextmanager
 async def lifespan(application: FastAPI):
-    """Load config, default model, and LM scorer on startup."""
-    global _config, _lm_scorer, _demo_sample
+    """Load config, default model, normalization stats, and LM scorer on startup."""
+    global _config, _lm_scorer, _demo_sample, _norm_mean, _norm_std
 
     yaml_path = Path("config.yaml")
     _config = load_config(
@@ -264,6 +278,16 @@ async def lifespan(application: FastAPI):
         logger.info("Pre-loaded cnn_lstm model")
     except Exception as e:
         logger.warning("Could not pre-load cnn_lstm: %s", e)
+
+    # Load normalization stats (must match training preprocessing)
+    norm_path = Path("outputs/normalization_stats.npz")
+    if norm_path.exists():
+        stats = np.load(norm_path)
+        _norm_mean = stats["mean"]
+        _norm_std = stats["std"]
+        logger.info("Loaded normalization stats from %s", norm_path)
+    else:
+        logger.warning("No normalization stats found at %s — inference will use raw features", norm_path)
 
     # Load LM scorer
     lm_path = Path("outputs/lm/char_5gram.binary")
